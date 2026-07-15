@@ -269,6 +269,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect('index.php?page=settings');
     }
 
+    /* ---------- تصفير كل البيانات (مع الاحتفاظ بحساب الدخول) ---------- */
+    if ($action === 'reset_data') {
+        $current = $_POST['reset_password'] ?? '';
+
+        // التأكد من كلمة المرور قبل الحذف الكامل
+        $stmt = $pdo->prepare('SELECT password_hash FROM users WHERE id = ?');
+        $stmt->execute([$_SESSION['user_id']]);
+        $u = $stmt->fetch();
+
+        if (!$u || !password_verify($current, $u['password_hash'])) {
+            set_flash('error', 'كلمة المرور غير صحيحة. لم يتم حذف أي بيانات.');
+            redirect('index.php?page=settings');
+        }
+
+        try {
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=0');
+            // حذف البيانات (الجداول الفرعية أولاً) مع تصفير العدّاد
+            foreach (['order_items', 'orders', 'items', 'vendors', 'categories'] as $t) {
+                $pdo->exec('DELETE FROM `' . $t . '`');
+                $pdo->exec('ALTER TABLE `' . $t . '` AUTO_INCREMENT = 1');
+            }
+            $pdo->exec('SET FOREIGN_KEY_CHECKS=1');
+
+            // إعادة إدراج المجموعات الافتراضية (كحالة التثبيت الأولى)
+            $default_categories = [
+                'مواد غذائية', 'مشروبات', 'أدوات نظافة', 'خضروات وفاكهة',
+                'لحوم ودواجن', 'مستلزمات مكتبية', 'أخرى',
+            ];
+            $ins = $pdo->prepare('INSERT INTO categories (name) VALUES (?)');
+            foreach ($default_categories as $c) {
+                $ins->execute([$c]);
+            }
+
+            set_flash('success', 'تم حذف كل البيانات وإعادة التطبيق إلى حالته الأولى. (تم الاحتفاظ بحساب الدخول)');
+        } catch (Throwable $e) {
+            set_flash('error', 'تعذّر حذف البيانات: ' . mb_substr($e->getMessage(), 0, 200));
+        }
+        redirect('index.php?page=settings');
+    }
+
     // إجراء غير معروف
     redirect('index.php?page=settings');
 }
@@ -350,6 +390,35 @@ require_once __DIR__ . '/../includes/header.php';
                     <button type="submit" class="btn btn-danger btn-lg w-100">♻️ استعادة البيانات</button>
                 </form>
 
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- منطقة الخطر: تصفير كل البيانات -->
+<div class="row justify-content-center mt-4">
+    <div class="col-lg-12">
+        <div class="card border-danger">
+            <div class="card-header text-danger">🧨 تصفير كل البيانات</div>
+            <div class="card-body">
+                <div class="alert alert-danger small mb-3">
+                    ⚠️ هذا الإجراء يحذف <b>كل</b> الأوردرات والأصناف والموردين والمجموعات نهائياً،
+                    ويعيد التطبيق إلى حالته الأولى. <b>لا يمكن التراجع.</b>
+                    (يبقى حساب الدخول كما هو). يُنصَح بتنزيل نسخة احتياطية أولاً.
+                </div>
+                <form method="post" class="row g-2 align-items-end js-confirm-delete"
+                      data-confirm="سيتم حذف كل بياناتك نهائياً (أوردرات، أصناف، موردين، مجموعات). لا يمكن التراجع. هل أنت متأكد تماماً؟">
+                    <?= csrf_field() ?>
+                    <input type="hidden" name="action" value="reset_data">
+                    <div class="col-md-8">
+                        <label class="form-label fw-bold">أكّد بكلمة المرور الحالية</label>
+                        <input type="password" name="reset_password" class="form-control"
+                               placeholder="أدخل كلمة المرور للتأكيد" required autocomplete="off">
+                    </div>
+                    <div class="col-md-4 d-grid">
+                        <button type="submit" class="btn btn-danger btn-lg">🗑️ حذف كل البيانات</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
