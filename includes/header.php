@@ -46,7 +46,7 @@ $nav = [
 <body>
 
 <!-- شريط التنقّل العلوي -->
-<nav class="navbar navbar-expand-lg navbar-dark app-navbar sticky-top">
+<nav class="navbar navbar-expand-xl navbar-dark app-navbar sticky-top">
     <div class="container-fluid">
         <a class="navbar-brand fw-bold" href="index.php?page=dashboard">
             🧾 <?= e(APP_NAME) ?>
@@ -58,7 +58,7 @@ $nav = [
         </button>
 
         <div class="collapse navbar-collapse" id="mainNav">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-xl-0">
                 <?php foreach ($nav as $key => $item): ?>
                     <li class="nav-item">
                         <a class="nav-link <?= $active === $key ? 'active fw-bold' : '' ?>"

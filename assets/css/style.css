@@ -34,12 +34,20 @@ main {
     box-shadow: 0 2px 10px rgba(13, 110, 253, .25);
 }
 .app-navbar .navbar-brand {
-    font-size: 1.15rem;
+    font-size: 1.1rem;
+    white-space: nowrap;
+}
+/* توزيع عناصر القائمة بشكل مرتّب مع السماح بالالتفاف عند الضيق */
+.app-navbar .navbar-nav {
+    flex-wrap: wrap;
+    row-gap: .25rem;
+    align-items: center;
 }
 .app-navbar .nav-link {
     border-radius: .5rem;
-    padding: .4rem .7rem;
-    margin: 0 .05rem;
+    padding: .4rem .6rem;
+    margin: 0 .1rem;
+    white-space: nowrap;
     transition: background .2s;
 }
 .app-navbar .nav-link:hover {
@@ -48,7 +56,22 @@ main {
 .app-navbar .nav-link.active {
     background: rgba(255, 255, 255, .22);
 }
-.nav-emoji { margin-inline-end: 3px; }
+.nav-emoji { margin-inline-end: 4px; }
+
+/* على الشاشات الكبيرة: تصغير طفيف ليتّسع الكل في سطر واحد */
+@media (min-width: 1200px) {
+    .app-navbar .nav-link { padding: .4rem .5rem; font-size: .92rem; }
+    .app-navbar .nav-link .nav-emoji { font-size: .95rem; }
+}
+@media (min-width: 1400px) {
+    .app-navbar .nav-link { padding: .45rem .7rem; font-size: 1rem; }
+}
+
+/* منطقة المستخدم/الخروج: لا تلتفّ ومحاذاة متسقة */
+.app-navbar .navbar-collapse > .d-flex {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
 
 /* ---- البطاقات ---- */
 .card {
