@@ -33,11 +33,6 @@ if ($item_id > 0) {
     $item = $st->fetch();
 
     if ($item) {
-        // ضمان وجود المفاتيح دائماً لتفادي التحذيرات إن كان أي عمود ناقصاً أو فارغاً
-        $item['name']  = $item['name']  ?? '';
-        $item['specs'] = $item['specs'] ?? '';
-        $item['unit']  = $item['unit']  ?? '';
-
         $q = $pdo->prepare(
             "SELECT oi.quantity, oi.unit_price_egp, o.order_date, o.usd_rate, v.name AS vendor_name
              FROM order_items oi
@@ -64,6 +59,14 @@ if ($item_id > 0) {
     }
 }
 
+// قيم عرض آمنة تماماً (لا تُصدر أي تحذير مهما كانت حالة الصف)
+$item_name    = is_array($item) ? (string) ($item['name']  ?? '') : '';
+$item_specs   = is_array($item) ? (string) ($item['specs'] ?? '') : '';
+$item_unit    = is_array($item) ? (string) ($item['unit']  ?? '') : '';
+$item_display = $item_name
+    . ($item_specs !== '' ? ' — ' . $item_specs : '')
+    . ($item_unit  !== '' ? ' (' . $item_unit . ')' : '');
+
 $page_title = 'بحث عن صنف';
 $active = 'item_history';
 require_once __DIR__ . '/../includes/header.php';
@@ -81,7 +84,7 @@ require_once __DIR__ . '/../includes/header.php';
                 <label class="form-label fw-bold">اختر الصنف</label>
                 <input type="text" id="itemPicker" class="form-control form-control-lg" list="itemsDL"
                        placeholder="اكتب للبحث عن صنف..." autocomplete="off"
-                       value="<?= $item ? e($item['name'] . ($item['specs'] ? ' — ' . $item['specs'] : '') . ($item['unit'] ? ' (' . $item['unit'] . ')' : '')) : '' ?>">
+                       value="<?= $item ? e($item_display) : '' ?>">
                 <datalist id="itemsDL">
                     <?php foreach ($items_js as $ij): ?>
                         <option value="<?= e($ij['label']) ?>"></option>
@@ -99,8 +102,8 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="alert alert-warning">الصنف غير موجود.</div>
 <?php elseif ($item): ?>
 
-    <h2 class="h5 mb-3">📦 <?= e($item['name']) ?>
-        <?php if ($item['specs']): ?><small class="text-muted">— <?= e($item['specs']) ?></small><?php endif; ?>
+    <h2 class="h5 mb-3">📦 <?= e($item_name !== '' ? $item_name : 'صنف رقم ' . (int)$item_id) ?>
+        <?php if ($item_specs !== ''): ?><small class="text-muted">— <?= e($item_specs) ?></small><?php endif; ?>
     </h2>
 
     <?php if (!$rows): ?>
@@ -136,7 +139,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <tr class="<?= $isLowest ? 'lowest-price' : '' ?>">
                                     <td><?= fmt_date($r['order_date']) ?></td>
                                     <td><?= e($r['vendor_name']) ?></td>
-                                    <td><?= fmt_qty($r['quantity']) ?> <?= e($item['unit']) ?></td>
+                                    <td><?= fmt_qty($r['quantity']) ?> <?= e($item_unit) ?></td>
                                     <td><?= money_egp($r['unit_price_egp']) ?></td>
                                     <td><?= $r['usd_rate'] > 0 ? number_format($r['usd_rate'], 2) : '—' ?></td>
                                     <td><?= usd_equiv($r['unit_price_egp'], $r['usd_rate']) ?></td>
