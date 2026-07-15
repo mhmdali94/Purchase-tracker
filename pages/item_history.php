@@ -33,6 +33,11 @@ if ($item_id > 0) {
     $item = $st->fetch();
 
     if ($item) {
+        // ضمان وجود المفاتيح دائماً لتفادي التحذيرات إن كان أي عمود ناقصاً أو فارغاً
+        $item['name']  = $item['name']  ?? '';
+        $item['specs'] = $item['specs'] ?? '';
+        $item['unit']  = $item['unit']  ?? '';
+
         $q = $pdo->prepare(
             "SELECT oi.quantity, oi.unit_price_egp, o.order_date, o.usd_rate, v.name AS vendor_name
              FROM order_items oi
