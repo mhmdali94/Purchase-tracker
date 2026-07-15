@@ -1,0 +1,173 @@
+/* ==================================================================
+   assets/css/style.css
+   أنماط التطبيق — تصميم بسيط، أزرار كبيرة، وواجهة عربية RTL مريحة.
+   ================================================================== */
+
+:root {
+    --brand: #0d6efd;
+    --brand-dark: #0a58ca;
+    --brand-2: #06b6d4;
+    --ink: #1e293b;
+    --muted: #64748b;
+    --bg: #f4f6fb;
+}
+
+* {
+    font-family: 'Cairo', 'Segoe UI', Tahoma, sans-serif;
+}
+
+body {
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1 0 auto;
+}
+
+/* ---- شريط التنقّل ---- */
+.app-navbar {
+    background: linear-gradient(90deg, var(--brand-dark), var(--brand));
+    box-shadow: 0 2px 10px rgba(13, 110, 253, .25);
+}
+.app-navbar .navbar-brand {
+    font-size: 1.15rem;
+}
+.app-navbar .nav-link {
+    border-radius: .5rem;
+    padding: .4rem .7rem;
+    margin: 0 .05rem;
+    transition: background .2s;
+}
+.app-navbar .nav-link:hover {
+    background: rgba(255, 255, 255, .15);
+}
+.app-navbar .nav-link.active {
+    background: rgba(255, 255, 255, .22);
+}
+.nav-emoji { margin-inline-end: 3px; }
+
+/* ---- البطاقات ---- */
+.card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 4px 18px rgba(15, 23, 42, .06);
+}
+.card-header {
+    background: #fff;
+    border-bottom: 2px solid #eef2f7;
+    border-radius: 1rem 1rem 0 0 !important;
+    font-weight: 700;
+}
+
+/* ---- بطاقات الإحصائيات في الرئيسية ---- */
+.stat-card {
+    color: #fff;
+    border-radius: 1rem;
+    padding: 1.2rem;
+    text-align: center;
+}
+.stat-card .stat-number { font-size: 2.2rem; font-weight: 700; line-height: 1; }
+.stat-card .stat-label  { font-size: 1rem; opacity: .95; margin-top: .3rem; }
+.bg-grad-1 { background: linear-gradient(135deg, #0d6efd, #3b82f6); }
+.bg-grad-2 { background: linear-gradient(135deg, #06b6d4, #22d3ee); }
+.bg-grad-3 { background: linear-gradient(135deg, #16a34a, #4ade80); }
+.bg-grad-4 { background: linear-gradient(135deg, #7c3aed, #a855f7); }
+
+/* ---- أزرار كبيرة سريعة الوصول ---- */
+.big-action {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: .4rem;
+    padding: 1.6rem 1rem;
+    font-size: 1.15rem;
+    font-weight: 700;
+    border-radius: 1rem;
+    text-decoration: none;
+    color: #fff;
+    transition: transform .12s ease, box-shadow .2s;
+}
+.big-action .emoji { font-size: 2rem; }
+.big-action:hover { transform: translateY(-3px); box-shadow: 0 8px 22px rgba(15,23,42,.18); color:#fff; }
+
+/* ---- الجداول ---- */
+.table thead th {
+    background: #eef2ff;
+    color: #334155;
+    white-space: nowrap;
+}
+.table td, .table th { vertical-align: middle; }
+
+/* صف أقل سعر في تاريخ الصنف */
+.lowest-price {
+    background: #d1fae5 !important;
+    font-weight: 700;
+}
+.lowest-price td:first-child::before {
+    content: "⭐ ";
+}
+
+/* معلومة ثانوية (المعادل بالدولار) */
+.usd-note {
+    color: var(--muted);
+    font-size: .8rem;
+    display: block;
+}
+
+/* ---- نموذج الأوردر ---- */
+.order-line td { padding: .4rem; }
+.line-total-cell { font-weight: 700; color: var(--brand-dark); white-space: nowrap; }
+
+.grand-total-box {
+    background: linear-gradient(135deg, #0d6efd, #06b6d4);
+    color: #fff;
+    border-radius: 1rem;
+    padding: 1rem 1.4rem;
+}
+.grand-total-box .amount { font-size: 1.8rem; font-weight: 700; }
+
+/* ---- تسجيل الدخول ---- */
+.login-wrapper {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #0a58ca, #06b6d4);
+    padding: 1rem;
+}
+.login-card {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 1.2rem;
+    background: #fff;
+    padding: 2rem;
+    box-shadow: 0 20px 50px rgba(0,0,0,.25);
+}
+
+/* حقول أكبر لسهولة الاستخدام على الجوال */
+.form-control, .form-select, .btn {
+    border-radius: .7rem;
+}
+.form-control-lg, .btn-lg { font-size: 1.05rem; }
+
+.app-footer {
+    flex-shrink: 0;
+    background: #fff;
+    border-top: 1px solid #e5e9f2;
+}
+
+/* على الشاشات الصغيرة: مسافات مريحة */
+@media (max-width: 576px) {
+    .stat-card .stat-number { font-size: 1.8rem; }
+    .big-action { padding: 1.2rem .6rem; font-size: 1rem; }
+    h1, .h1 { font-size: 1.5rem; }
+}
+
+/* إخفاء أسهم الأرقام غير الضرورية على بعض المتصفحات */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button { margin: 0; }
