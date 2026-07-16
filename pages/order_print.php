@@ -102,32 +102,11 @@ $total = array_sum(array_column($lines, 'line_total'));
         .sina-logo {
             display: flex;
             align-items: center;
-            gap: 12px;
         }
-        .logo-wave-svg {
-            width: 70px;
-            height: 70px;
-        }
-        .logo-text {
-            text-align: left;
-        }
-        .logo-brand {
-            font-size: 32px;
-            font-weight: 700;
-            line-height: 1;
-            color: #000;
-        }
-        .logo-sub {
-            font-size: 14px;
-            font-weight: 600;
-            color: #4b5563;
-            letter-spacing: 0.5px;
-        }
-        .logo-desc {
-            font-size: 10px;
-            color: #9ca3af;
-            line-height: 1.1;
-            margin-top: 2px;
+        .sina-logo-img {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
         }
 
         /* البيانات على اليمين */
@@ -326,12 +305,9 @@ $total = array_sum(array_column($lines, 'line_total'));
                 margin-bottom: 10px;
                 padding-bottom: 5px;
             }
-            .logo-wave-svg {
-                width: 50px;
-                height: 50px;
-            }
-            .logo-brand {
-                font-size: 24px;
+            .sina-logo-img {
+                width: 65px;
+                height: 65px;
             }
             .po-title-box {
                 margin: 10px 0;
@@ -410,27 +386,11 @@ $total = array_sum(array_column($lines, 'line_total'));
                 <p>رقم ..-09-PEP</p>
             </div>
             
-            <!-- اليسار: اللوجو الملون المنسوخ بدقة بالـ SVG -->
+            <!-- اليسار: اللوجو الرسمي لشركة سينا -->
             <div class="sina-logo">
-                <svg class="logo-wave-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
-                    <defs>
-                        <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" stop-color="#db2777" />
-                            <stop offset="50%" stop-color="#2563eb" />
-                            <stop offset="100%" stop-color="#06b6d4" />
-                        </linearGradient>
-                    </defs>
-                    <!-- خطوط لولبية متموجة ملونة تشبه اللوجو الأصلي لسينا -->
-                    <path d="M 50,5 C 38,15 32,30 35,45 C 38,60 48,70 45,85 C 43,92 38,96 30,95" fill="none" stroke="url(#waveGrad)" stroke-width="4.5" />
-                    <path d="M 55,7 C 45,17 40,32 43,47 C 46,62 56,72 53,87 C 51,94 46,97 38,96" fill="none" stroke="#2563eb" stroke-width="2.5" opacity="0.85" />
-                    <path d="M 45,8 C 35,18 30,33 33,48 C 36,63 46,73 43,88 C 41,95 36,98 28,97" fill="none" stroke="#db2777" stroke-width="2.5" opacity="0.85" />
-                    <path d="M 60,10 C 50,20 45,35 48,50 C 51,65 61,75 58,90 C 56,96 51,99 43,98" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.85" />
-                </svg>
-                <div class="logo-text">
-                    <div class="logo-brand">Sina</div>
-                    <div class="logo-sub">Cosmetics</div>
-                    <div class="logo-desc">industry<br>experts</div>
-                </div>
+                <img src="../assets/images/sina-logo.jpg"
+                     alt="Sina Cosmetics Industry Experts"
+                     class="sina-logo-img">
             </div>
         </div>
 
