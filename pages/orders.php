@@ -32,7 +32,7 @@ if ($f_from !== '')         { $where[] = 'o.order_date >= ?';  $params[] = $f_fr
 if ($f_to !== '')           { $where[] = 'o.order_date <= ?';  $params[] = $f_to; }
 $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
-$sql = "SELECT o.id, o.order_date, o.usd_rate, o.notes, v.name AS vendor_name,
+$sql = "SELECT o.id, o.order_date, o.usd_rate, o.notes, o.custom_order_number, v.name AS vendor_name,
                COALESCE(SUM(oi.line_total),0) AS total,
                COUNT(oi.id) AS lines_count
         FROM orders o
@@ -113,8 +113,9 @@ require_once __DIR__ . '/../includes/header.php';
                     </thead>
                     <tbody>
                         <?php foreach ($orders as $o): ?>
+                            <?php $display_no = $o['custom_order_number'] !== '' && $o['custom_order_number'] !== null ? $o['custom_order_number'] : (int)$o['id']; ?>
                             <tr>
-                                <td><?= (int)$o['id'] ?></td>
+                                <td><?= e($display_no) ?></td>
                                 <td><?= fmt_date($o['order_date']) ?></td>
                                 <td><?= e($o['vendor_name']) ?></td>
                                 <td><span class="badge bg-secondary"><?= (int)$o['lines_count'] ?></span></td>
@@ -129,7 +130,7 @@ require_once __DIR__ . '/../includes/header.php';
                                     <a href="index.php?page=order_new&id=<?= (int)$o['id'] ?>"
                                        class="btn btn-sm btn-outline-primary">✏️</a>
                                     <form method="post" class="d-inline js-confirm-delete"
-                                          data-confirm="حذف الأوردر رقم <?= (int)$o['id'] ?>؟ لا يمكن التراجع.">
+                                          data-confirm="حذف الأوردر رقم <?= e($display_no) ?>؟ لا يمكن التراجع.">
                                         <?= csrf_field() ?>
                                         <input type="hidden" name="action" value="delete">
                                         <input type="hidden" name="id" value="<?= (int)$o['id'] ?>">

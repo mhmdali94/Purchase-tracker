@@ -156,7 +156,12 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="card-header">🧾 بيانات الأوردر</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-2">
+                    <label class="form-label fw-bold">رقم أمر التوريد</label>
+                    <input type="text" name="custom_order_number" class="form-control form-control-lg"
+                           value="<?= $is_edit ? e($order['custom_order_number'] ?? '') : '' ?>" placeholder="تلقائي (مثل: 8726)">
+                </div>
+                <div class="col-md-3">
                     <label class="form-label fw-bold">المورد <span class="text-danger">*</span></label>
                     <select name="vendor_id" class="form-select form-select-lg" required>
                         <option value="">— اختر المورد —</option>
@@ -179,7 +184,7 @@ require_once __DIR__ . '/../includes/header.php';
                            class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['usd_rate']) : '' ?>" placeholder="48.75">
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-2">
                     <label class="form-label fw-bold">ملاحظات</label>
                     <input type="text" name="notes" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['notes']) : '' ?>" placeholder="اختياري">

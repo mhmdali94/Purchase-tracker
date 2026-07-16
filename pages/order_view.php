@@ -49,7 +49,7 @@ require_once __DIR__ . '/../includes/header.php';
 ?>
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-    <h1 class="h3 fw-bold mb-0">🧾 أوردر رقم <?= (int)$order['id'] ?></h1>
+    <h1 class="h3 fw-bold mb-0">🧾 أوردر رقم <?= $order['custom_order_number'] !== '' && $order['custom_order_number'] !== null ? e($order['custom_order_number']) : (int)$order['id'] ?></h1>
     <div class="d-flex gap-2 flex-wrap">
         <a href="index.php?page=orders" class="btn btn-outline-secondary">↩️ رجوع</a>
         <a href="index.php?page=order_print&id=<?= (int)$order['id'] ?>" target="_blank" class="btn btn-success">🖨️ طباعة أمر التوريد</a>

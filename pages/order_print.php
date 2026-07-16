@@ -39,7 +39,7 @@ $total = array_sum(array_column($lines, 'line_total'));
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>أمر توريد رقم <?= (int)$order['id'] ?></title>
+    <title>أمر توريد رقم <?= $order['custom_order_number'] !== '' && $order['custom_order_number'] !== null ? e($order['custom_order_number']) : (int)$order['id'] ?></title>
     <!-- خط القاهرة العربي الرسمي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
@@ -303,10 +303,15 @@ $total = array_sum(array_column($lines, 'line_total'));
             color: #000;
         }
 
-        /* إخفاء شاشة عند الطباعة */
+        /* إخفاء شاشة عند الطباعة وتنسيق الورقة لتناسب صفحة واحدة A4 */
         @media print {
+            @page {
+                size: A4;
+                margin: 8mm 12mm; /* تقليل هوامش الصفحة الخارجية */
+            }
             body {
                 padding: 0;
+                font-size: 11.5px;
             }
             .print-actions {
                 display: none;
@@ -317,15 +322,80 @@ $total = array_sum(array_column($lines, 'line_total'));
                 width: 100%;
                 max-width: 100%;
             }
+            .print-header {
+                margin-bottom: 10px;
+                padding-bottom: 5px;
+            }
+            .logo-wave-svg {
+                width: 50px;
+                height: 50px;
+            }
+            .logo-brand {
+                font-size: 24px;
+            }
+            .po-title-box {
+                margin: 10px 0;
+            }
+            .po-title {
+                font-size: 16px;
+                padding: 4px 20px;
+            }
+            .po-date-vendor {
+                margin: 10px 0;
+                font-size: 12px;
+            }
+            .po-table {
+                margin-bottom: 10px;
+            }
+            .po-table th, .po-table td {
+                padding: 4px 6px;
+                font-size: 11px;
+            }
+            .po-terms-section {
+                font-size: 12px;
+                margin-top: 10px;
+            }
+            .signatures-section {
+                margin-top: 15px;
+                padding: 5px 0;
+                font-size: 12px;
+            }
+            .sig-line {
+                height: 18px;
+            }
+            .item-images-gallery {
+                margin-top: 15px;
+                padding-top: 10px;
+            }
+            .gallery-grid {
+                gap: 8px;
+            }
+            .gallery-item {
+                width: 90px;
+                padding: 3px;
+            }
+            .gallery-img {
+                width: 80px;
+                height: 60px; /* جعل عينات الصور أصغر ومضغوطة أفقياً لتوفر مساحة */
+            }
+            .gallery-label {
+                font-size: 9px;
+            }
+            .print-footer {
+                margin-top: 15px;
+                padding: 4px 10px;
+                font-size: 9px;
+            }
         }
     </style>
 </head>
 <body>
 
     <!-- أزرار التحكم -->
-    <div class="print-actions">
+    <div class="print-actions" style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
         <a href="index.php?page=order_view&id=<?= (int)$order['id'] ?>" class="btn-print" style="background-color: #64748b;">↩️ رجوع للتفاصيل</a>
-        <button onclick="window.print()" class="btn-print">🖨️ طباعة الآن (PDF)</button>
+        <button onclick="window.print()" class="btn-print">🖨️ طباعة أو حفظ كـ PDF</button>
+        <span style="font-size: 13px; color: #475569; font-weight: 600;">💡 لحفظ الملف كـ PDF: اختر <b>"حفظ بتنسيق PDF" (Save as PDF)</b> من خانة الوجهة (Destination) في نافذة الطباعة.</span>
     </div>
 
     <!-- حاوية الصفحة -->
@@ -366,7 +436,7 @@ $total = array_sum(array_column($lines, 'line_total'));
 
         <!-- رقم أمر التوريد -->
         <div class="po-title-box">
-            <div class="po-title">أمر توريد رقم ( <?= (int)$order['id'] ?> )</div>
+            <div class="po-title">أمر توريد رقم ( <?= $order['custom_order_number'] !== '' && $order['custom_order_number'] !== null ? e($order['custom_order_number']) : (int)$order['id'] ?> )</div>
         </div>
 
         <!-- تاريخ وتفاصيل المورد -->
@@ -445,7 +515,7 @@ $total = array_sum(array_column($lines, 'line_total'));
         <!-- التوقيعات -->
         <div class="signatures-section">
             <div class="sig-box">
-                <span>يعتمد ( عبدالله توفيق )</span>
+                <span>يعتمد:</span>
                 <div class="sig-line"></div>
             </div>
             <div class="sig-box">
@@ -453,7 +523,7 @@ $total = array_sum(array_column($lines, 'line_total'));
                 <div class="sig-line"></div>
             </div>
             <div class="sig-box">
-                <span>التوقيع: كيرلس ابراهيم</span>
+                <span>التوقيع:</span>
                 <div class="sig-line"></div>
             </div>
         </div>
