@@ -127,7 +127,7 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="text-end" style="white-space:nowrap">
                                     <a href="index.php?page=order_view&id=<?= (int)$o['id'] ?>"
                                        class="btn btn-sm btn-outline-secondary">👁️ عرض</a>
-                                    <a href="index.php?page=order_print&id=<?= (int)$o['id'] ?>"
+                                    <a href="index.php?page=order_print&id=<?= (int)$o['id'] ?>&download=1"
                                        target="_blank"
                                        class="btn btn-sm btn-outline-success"
                                        title="تحميل PDF">📄 PDF</a>

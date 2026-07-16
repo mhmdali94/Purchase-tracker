@@ -181,6 +181,31 @@ $total = array_sum(array_column($lines, 'line_total'));
             color: #334155;
         }
 
+        /* ===== ضبط الصفحات ومنع تقطيع الصفوف ===== */
+        /* منع قطع صفوف الجدول عبر صفحات */
+        .po-table tr {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        /* تكرار رأس الجدول على كل صفحة */
+        .po-table thead {
+            display: table-header-group;
+        }
+        .po-table tfoot {
+            display: table-row-group;
+        }
+        /* منع تقطيع أقسام التوقيعات والبنود عبر صفحات */
+        .po-terms-section,
+        .signatures-section {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+        /* فوتر كل صفحة يظهر في أسفل كل صفحة مطبوعة */
+        .print-footer {
+            page-break-inside: avoid;
+            break-inside: avoid;
+        }
+
         /* تفاصيل الدفع والتوريد */
         .po-terms-section {
             font-size: 14px;
@@ -282,11 +307,10 @@ $total = array_sum(array_column($lines, 'line_total'));
             color: #000;
         }
 
-        /* إخفاء شاشة عند الطباعة وتنسيق الورقة لتناسب صفحة واحدة A4 */
         @media print {
             @page {
                 size: A4;
-                margin: 8mm 12mm; /* تقليل هوامش الصفحة الخارجية */
+                margin: 8mm 12mm;
             }
             body {
                 padding: 0;
@@ -327,6 +351,24 @@ $total = array_sum(array_column($lines, 'line_total'));
                 padding: 4px 6px;
                 font-size: 11px;
             }
+            /* منع قطع صفوف الجدول عند الطباعة */
+            .po-table tr {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            .po-table thead {
+                display: table-header-group;
+            }
+            .po-terms-section,
+            .signatures-section,
+            .print-footer {
+                page-break-inside: avoid !important;
+                break-inside: avoid !important;
+            }
+            /* التوقيعات تبقى معاً ولا تنفصل */
+            .signatures-section {
+                page-break-before: auto;
+            }
             .po-terms-section {
                 font-size: 12px;
                 margin-top: 10px;
@@ -352,7 +394,7 @@ $total = array_sum(array_column($lines, 'line_total'));
             }
             .gallery-img {
                 width: 80px;
-                height: 60px; /* جعل عينات الصور أصغر ومضغوطة أفقياً لتوفر مساحة */
+                height: 60px;
             }
             .gallery-label {
                 font-size: 9px;
@@ -388,7 +430,7 @@ $total = array_sum(array_column($lines, 'line_total'));
             
             <!-- اليسار: اللوجو الرسمي لشركة سينا -->
             <div class="sina-logo">
-                <img src="../assets/images/sina-logo.jpg"
+                <img src="assets/images/sina-logo.jpg"
                      alt="Sina Cosmetics Industry Experts"
                      class="sina-logo-img">
             </div>
@@ -527,13 +569,100 @@ $total = array_sum(array_column($lines, 'line_total'));
 
     </div>
 
+    <!-- html2pdf.js محلي لضمان عمله بدون إنترنت وبدون أي تبعيات -->
+    <script src="assets/js/vendor/html2pdf.bundle.min.js"></script>
     <script>
-        // إطلاق حوار الطباعة بمجرد تحميل الصفحة تلقائياً لراحة المستخدم
         window.addEventListener('DOMContentLoaded', function() {
-            setTimeout(function() {
-                window.print();
-            }, 500);
+            var params = new URLSearchParams(window.location.search);
+
+            if (params.get('download') === '1') {
+                // --- وضع التحميل المباشر ---
+
+                // إخفاء أزرار التحكم حتى لا تظهر في PDF
+                var actions = document.querySelector('.print-actions');
+                if (actions) actions.style.display = 'none';
+
+                // إظهار شاشة انتظار
+                var overlay = document.createElement('div');
+                overlay.id = 'pdf-loading';
+                overlay.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:Cairo,sans-serif;">'
+                    + '<div style="font-size:48px;margin-bottom:20px;">⏳</div>'
+                    + '<div style="font-size:20px;font-weight:700;color:#16a34a;">جاري إنشاء ملف PDF...</div>'
+                    + '<div style="font-size:14px;color:#64748b;margin-top:10px;">سيبدأ التحميل خلال ثوانٍ</div>'
+                    + '</div>';
+                overlay.style.cssText = 'position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;';
+                document.body.appendChild(overlay);
+
+                // انتظار تحميل الصور أولاً ثم إنشاء PDF
+                var imgs = document.querySelectorAll('.print-page img');
+                var loaded = 0;
+                var total  = imgs.length;
+
+                function generate() {
+                    var element = document.querySelector('.print-page');
+                    var orderNo = <?= json_encode(
+                        $order['custom_order_number'] !== '' && $order['custom_order_number'] !== null
+                            ? $order['custom_order_number']
+                            : (string)(int)$order['id']
+                    ) ?>;
+
+                    var opt = {
+                        margin:      [10, 12, 10, 12],
+                        filename:    'order-' + orderNo + '.pdf',
+                        image:       { type: 'jpeg', quality: 0.95 },
+                        html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+                        jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
+                    };
+
+                    html2pdf().set(opt).from(element).save().then(function() {
+                        overlay.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:Cairo,sans-serif;">'
+                            + '<div style="font-size:48px;margin-bottom:20px;">✅</div>'
+                            + '<div style="font-size:20px;font-weight:700;color:#16a34a;">تم تحميل PDF بنجاح!</div>'
+                            + '<div style="font-size:14px;color:#64748b;margin-top:10px;">يمكنك إغلاق هذه النافذة</div>'
+                            + '</div>';
+                        // إعادة إظهار الأزرار للطباعة العادية
+                        if (actions) actions.style.display = '';
+                    }).catch(function(err) {
+                        overlay.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:Cairo,sans-serif;">'
+                            + '<div style="font-size:48px;margin-bottom:20px;">❌</div>'
+                            + '<div style="font-size:20px;font-weight:700;color:#dc2626;">حدث خطأ أثناء إنشاء PDF</div>'
+                            + '<div style="font-size:14px;color:#64748b;margin-top:10px;">حاول الطباعة العادية بدلاً من ذلك</div>'
+                            + '<button onclick="document.getElementById(\'pdf-loading\').remove();window.print();" style="margin-top:20px;padding:10px 24px;background:#16a34a;color:#fff;border:none;border-radius:6px;font-size:16px;cursor:pointer;">🖨️ طباعة</button>'
+                            + '</div>';
+                    });
+                }
+
+                if (total === 0) {
+                    // لا توجد صور — ابدأ مباشرة
+                    setTimeout(generate, 400);
+                } else {
+                    // انتظر تحميل جميع الصور
+                    imgs.forEach(function(img) {
+                        if (img.complete) {
+                            loaded++;
+                            if (loaded >= total) setTimeout(generate, 200);
+                        } else {
+                            img.addEventListener('load', function() {
+                                loaded++;
+                                if (loaded >= total) setTimeout(generate, 200);
+                            });
+                            img.addEventListener('error', function() {
+                                loaded++;
+                                if (loaded >= total) setTimeout(generate, 200);
+                            });
+                        }
+                    });
+                    // احتياط: ابدأ بعد 3 ثوانٍ حتى لو لم تكتمل الصور
+                    setTimeout(generate, 3000);
+                }
+
+            } else {
+                // --- وضع الطباعة العادي ---
+                setTimeout(function() { window.print(); }, 500);
+            }
         });
     </script>
 </body>
 </html>
+
