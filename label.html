@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A4 Barcode Label Generator</title>
+<style>
+  :root{--blue:#3b82f6;--bg:#0f172a;--card:#1e293b;--line:#334155;--text:#e2e8f0;--muted:#94a3b8;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Tahoma,system-ui,-apple-system,Roboto,Arial,sans-serif;background:var(--bg);color:var(--text)}
+  .panel{max-width:820px;margin:0 auto;padding:24px}
+  .head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px}
+  h1{font-size:20px;margin:0 0 4px}
+  h2{font-size:14px;margin:0 0 12px;color:var(--text)}
+  .sub{color:var(--muted);font-size:13px;margin:0 0 20px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end}
+  label{display:block;font-size:12px;color:var(--muted);margin-bottom:4px}
+  input[type=text],input[type=number]{background:#0b1220;border:1px solid var(--line);color:var(--text);padding:9px 11px;border-radius:8px;font-size:14px;outline:none}
+  input:focus{border-color:var(--blue)}
+  button{cursor:pointer;border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600}
+  .btn-primary{background:var(--blue);color:#fff}
+  .btn-ghost{background:transparent;border:1px solid var(--line);color:var(--text)}
+  .btn-danger{background:transparent;border:1px solid #7f1d1d;color:#fca5a5;padding:4px 10px;font-size:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px;margin-top:16px}
+  table{width:100%;border-collapse:collapse;margin-top:6px}
+  th,td{text-align:start;padding:8px 6px;border-bottom:1px solid var(--line);font-size:14px}
+  th{color:var(--muted);font-weight:600;font-size:12px}
+  .total{margin-top:14px;font-size:14px;color:var(--muted)}
+  .total b{color:var(--text)}
+  .actions{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+  .grid-fields{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+  .grid-fields input{width:100%}
+  .grid-fields.small label{font-size:11px}
+  .chk{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--text);margin-top:14px}
+  code{background:#0b1220;padding:1px 5px;border-radius:4px;font-size:12px}
+  textarea{width:100%;min-height:90px;background:#0b1220;border:1px solid var(--line);color:var(--text);border-radius:8px;padding:10px;font-size:13px;font-family:ui-monospace,monospace;resize:vertical}
+
+  /* ---------- Printable sheets ---------- */
+  #sheetWrap{margin:24px auto;display:flex;flex-direction:column;align-items:center;gap:24px}
+  .page{width:210mm;height:297mm;background:#fff;box-shadow:0 0 0 1px #cbd5e1;position:relative;overflow:hidden;direction:ltr}
+  .grid{display:grid;position:absolute;top:0;left:0}
+  .label{overflow:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0.6mm 1mm}
+  .label svg{width:100%;display:block}
+  .label svg rect{fill:#000}
+  .label .num{font-family:"Courier New",monospace;line-height:1;margin-top:0.6mm;letter-spacing:0.2px;color:#000;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+  .label .txt{font-family:"Segoe UI",Tahoma,sans-serif;line-height:1.1;margin-top:0.4mm;color:#000;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;text-align:center}
+  .show-borders .label{outline:0.1mm dashed #94a3b8}
+
+  @media screen{#sheetWrap:empty{display:none}}
+  @media print{
+    @page{size:A4;margin:0}
+    html,body{background:#fff}
+    .panel{display:none}
+    #sheetWrap{margin:0;gap:0}
+    .page{box-shadow:none;page-break-after:always;break-after:page}
+    .page:last-child{page-break-after:auto;break-after:auto}
+  }
+</style>
+</head>
+<body>
+
+<div class="panel">
+  <div class="head">
+    <div>
+      <h1 data-i18n="h1">A4 Barcode Label Generator</h1>
+      <p class="sub" data-i18n="sub">Adjust the layout below to match your physical label sheet, then add barcodes and print.</p>
+    </div>
+    <button class="btn-ghost" id="langBtn">العربية</button>
+  </div>
+
+  <!-- ---------- Sheet layout / calibration ---------- -->
+  <div class="card">
+    <h2 data-i18n="layoutH2">Sheet layout &amp; alignment</h2>
+    <div class="grid-fields small">
+      <div><label data-i18n="cols">Columns</label><input id="cols" type="number" value="6" min="1"></div>
+      <div><label data-i18n="rows">Rows</label><input id="rows" type="number" value="16" min="1"></div>
+      <div><label data-i18n="lw">Label width (mm)</label><input id="lw" type="number" value="35" step="0.1"></div>
+      <div><label data-i18n="lh">Label height (mm)</label><input id="lh" type="number" value="18.5" step="0.1"></div>
+
+      <div><label data-i18n="mt">Top margin (mm)</label><input id="mt" type="number" value="0" step="0.1"></div>
+      <div><label data-i18n="ml">Left margin (mm)</label><input id="ml" type="number" value="0" step="0.1"></div>
+      <div><label data-i18n="gx">Gap between cols (mm)</label><input id="gx" type="number" value="0" step="0.1"></div>
+      <div><label data-i18n="gy">Gap between rows (mm)</label><input id="gy" type="number" value="0" step="0.1"></div>
+
+      <div><label data-i18n="ox">Printer offset X (mm)</label><input id="ox" type="number" value="0" step="0.1"></div>
+      <div><label data-i18n="oy">Printer offset Y (mm)</label><input id="oy" type="number" value="0" step="0.1"></div>
+      <div><label data-i18n="bh">Barcode height (mm)</label><input id="bh" type="number" value="7" step="0.1"></div>
+      <div><label data-i18n="bw">Barcode width %</label><input id="bw" type="number" value="70" step="1" min="10" max="100"></div>
+      <div><label data-i18n="fs">Number font (mm)</label><input id="fs" type="number" value="2.5" step="0.1"></div>
+
+      <div><label data-i18n="scale">Scale %</label><input id="scale" type="number" value="100" step="0.5" min="10"></div>
+      <div><label data-i18n="tf">Text font (mm)</label><input id="tf" type="number" value="2" step="0.1"></div>
+      <div><label data-i18n="tmax">Max text chars</label><input id="tmax" type="number" value="24" step="1" min="1"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="showText"> <span data-i18n="showText">Add a text line under the number</span></label>
+    <label class="chk"><input type="checkbox" id="borders"> <span data-i18n="borders">Show label outlines (helps align to the sheet)</span></label>
+    <div class="actions">
+      <button class="btn-ghost" id="testBtn" data-i18n="testBtn">Print calibration test (1 sheet)</button>
+      <button class="btn-ghost" id="saveBtn" data-i18n="saveBtn">Save these settings</button>
+    </div>
+    <p class="hint" data-i18n="calibHint">Calibration: print the test sheet on plain paper, lay it over your label sheet against the light. If everything is shifted, adjust Top / Left margin. If labels drift more toward right/down, adjust label width/height or the gaps, or use Scale %. Always print at 100% scale with "Fit to page" OFF and margins set to None.</p>
+  </div>
+
+  <!-- ---------- Barcode input ---------- -->
+  <div class="card">
+    <h2 data-i18n="barcodesH2">Barcodes</h2>
+    <div class="row">
+      <div><label data-i18n="code">Barcode number</label><input id="code" type="text" placeholder="6291234567890" style="width:200px" autofocus></div>
+      <div><label data-i18n="qty">Quantity</label><input id="qty" type="number" value="96" min="1" style="width:90px"></div>
+      <div><label data-i18n="txt">Text (optional)</label><input id="txt" type="text" maxlength="24" placeholder="—" style="width:180px"></div>
+      <button class="btn-primary" id="addBtn" data-i18n="add">Add</button>
+    </div>
+    <p class="hint" data-i18n="enterHint">Press Enter in the barcode field to add quickly.</p>
+    <details style="margin-top:12px">
+      <summary style="cursor:pointer;color:var(--muted);font-size:13px" data-i18n="pasteSummary">Or paste a list (one per line: barcode qty)</summary>
+      <textarea id="bulk" placeholder="6291234567890 20&#10;6291234567891 12&#10;ABC-001 5"></textarea>
+      <button class="btn-ghost" id="bulkBtn" style="margin-top:8px" data-i18n="import">Import list</button>
+    </details>
+  </div>
+
+  <!-- ---------- List + actions ---------- -->
+  <div class="card">
+    <table id="tbl"><thead><tr><th data-i18n="thBarcode">Barcode</th><th style="width:70px" data-i18n="thQty">Qty</th><th data-i18n="thText">Text</th><th style="width:60px"></th></tr></thead><tbody id="tbody"></tbody></table>
+    <p class="total"><span data-i18n="perPageLbl">Labels per sheet:</span> <b id="perPage">96</b> · <span data-i18n="totalLbl">Total labels:</span> <b id="totalCount">0</b> · <span data-i18n="sheetsLbl">Sheets:</span> <b id="sheetCount">0</b></p>
+    <div class="actions">
+      <button class="btn-primary" id="genBtn" data-i18n="generate">Generate &amp; Preview</button>
+      <button class="btn-ghost" id="printBtn" data-i18n="print">Print</button>
+      <button class="btn-ghost" id="clearBtn" data-i18n="clear">Clear all</button>
+    </div>
+  </div>
+</div>
+
+<div id="sheetWrap"></div>
+
+<script>
+/* ===================== Translations ===================== */
+const I18N={
+  en:{
+    appTitle:"A4 Barcode Label Generator",
+    h1:"A4 Barcode Label Generator",
+    sub:"Adjust the layout below to match your physical label sheet, then add barcodes and print.",
+    layoutH2:"Sheet layout & alignment",
+    cols:"Columns",rows:"Rows",lw:"Label width (mm)",lh:"Label height (mm)",
+    mt:"Top margin (mm)",ml:"Left margin (mm)",gx:"Gap between cols (mm)",gy:"Gap between rows (mm)",
+    ox:"Printer offset X (mm)",oy:"Printer offset Y (mm)",bh:"Barcode height (mm)",bw:"Barcode width %",fs:"Number font (mm)",scale:"Scale %",
+    tf:"Text font (mm)",tmax:"Max text chars",showText:"Add a text line under the number",
+    borders:"Show label outlines (helps align to the sheet)",
+    testBtn:"Print calibration test (1 sheet)",saveBtn:"Save these settings",saved:"Saved ✓",
+    calibHint:"Calibration: print the test sheet on plain paper, lay it over your label sheet against the light. If everything is shifted, adjust Top / Left margin. If labels drift more toward right/down, adjust label width/height or the gaps, or use Scale %. Always print at 100% scale with \"Fit to page\" OFF and margins set to None.",
+    barcodesH2:"Barcodes",code:"Barcode number",qty:"Quantity",txt:"Text (optional)",add:"Add",
+    enterHint:"Press Enter in the barcode field to add quickly.",
+    pasteSummary:"Or paste a list (one per line: barcode qty text)",import:"Import list",
+    thBarcode:"Barcode",thQty:"Qty",thText:"Text",remove:"Remove",
+    perPageLbl:"Labels per sheet:",totalLbl:"Total labels:",sheetsLbl:"Sheets:",
+    generate:"Generate & Preview",print:"Print",clear:"Clear all",langBtn:"العربية"
+  },
+  ar:{
+    appTitle:"مولد ملصقات الباركود A4",
+    h1:"مولد ملصقات الباركود A4",
+    sub:"اضبط التخطيط أدناه ليطابق ورقة الملصقات لديك، ثم أضف الباركود واطبع.",
+    layoutH2:"تخطيط الورقة والمحاذاة",
+    cols:"عدد الأعمدة",rows:"عدد الصفوف",lw:"عرض الملصق (مم)",lh:"ارتفاع الملصق (مم)",
+    mt:"الهامش العلوي (مم)",ml:"الهامش الأيسر (مم)",gx:"الفراغ بين الأعمدة (مم)",gy:"الفراغ بين الصفوف (مم)",
+    ox:"إزاحة الطابعة X (مم)",oy:"إزاحة الطابعة Y (مم)",bh:"ارتفاع الباركود (مم)",bw:"عرض الباركود %",fs:"حجم خط الرقم (مم)",scale:"نسبة التحجيم %",
+    tf:"حجم خط النص (مم)",tmax:"أقصى عدد أحرف للنص",showText:"إضافة سطر نص أسفل الرقم",
+    borders:"إظهار حدود الملصقات (يساعد في المحاذاة مع الورقة)",
+    testBtn:"طباعة اختبار المعايرة (ورقة واحدة)",saveBtn:"حفظ الإعدادات",saved:"تم الحفظ ✓",
+    calibHint:"المعايرة: اطبع ورقة الاختبار على ورق عادي وضعها فوق ورقة الملصقات أمام الضوء. إذا كان كل شيء منزاحًا، اضبط الهامش العلوي/الأيسر. إذا انحرفت الملصقات أكثر كلما اتجهت لليمين/الأسفل، اضبط عرض/ارتفاع الملصق أو الفراغات أو استخدم نسبة التحجيم %. اطبع دائمًا بمقياس 100% مع إيقاف \"ملاءمة الصفحة\" وتعيين الهوامش إلى \"بدون\".",
+    barcodesH2:"الباركود",code:"رقم الباركود",qty:"الكمية",txt:"النص (اختياري)",add:"إضافة",
+    enterHint:"اضغط Enter في حقل الباركود للإضافة السريعة.",
+    pasteSummary:"أو الصق قائمة (كل سطر: الباركود ثم الكمية ثم النص)",import:"استيراد القائمة",
+    thBarcode:"الباركود",thQty:"الكمية",thText:"النص",remove:"حذف",
+    perPageLbl:"ملصقات لكل ورقة:",totalLbl:"إجمالي الملصقات:",sheetsLbl:"عدد الأوراق:",
+    generate:"توليد ومعاينة",print:"طباعة",clear:"مسح الكل",langBtn:"English"
+  }
+};
+let currentLang="en";
+const t=k=>I18N[currentLang][k];
+function applyLang(lang){
+  currentLang=lang;const d=I18N[lang];
+  document.documentElement.lang=lang;
+  document.documentElement.dir=lang==="ar"?"rtl":"ltr";
+  document.title=d.appTitle;
+  document.querySelectorAll("[data-i18n]").forEach(el=>{const k=el.getAttribute("data-i18n");if(d[k]!==undefined)el.textContent=d[k];});
+  document.getElementById("langBtn").textContent=d.langBtn;
+  localStorage.setItem("labelLang",lang);
+  renderTable();
+}
+
+/* ===================== Code128 encoder ===================== */
+const PATTERNS=["212222","222122","222221","121223","121322","131222","122213","122312","132212","221213","221312","231212","112232","122132","122231","113222","123122","123221","223211","221132","221231","213212","223112","312131","311222","321122","321221","312212","322112","322211","212123","212321","232121","111323","131123","131321","112313","132113","132311","211313","231113","231311","112133","112331","132131","113123","113321","133121","313121","211331","231131","213113","213311","213131","311123","311321","331121","312113","312311","332111","314111","221411","431111","111224","111422","121124","121421","141122","141221","112214","112412","122114","122411","142112","142211","241211","221114","413111","241112","134111","111242","121142","121241","114212","124112","124211","411212","421112","421211","212141","214121","412121","111143","111341","131141","114113","114311","411113","411311","113141","114131","311141","411131","211412","211214","211232","2331112"];
+function code128Codes(data){
+  const isDigits=/^\d+$/.test(data);let codes=[];
+  if(isDigits){
+    if(data.length%2===0){codes.push(105);for(let i=0;i<data.length;i+=2)codes.push(parseInt(data.substr(i,2),10));}
+    else{codes.push(104);codes.push(data.charCodeAt(0)-32);codes.push(99);for(let i=1;i<data.length;i+=2)codes.push(parseInt(data.substr(i,2),10));}
+  }else{codes.push(104);for(let i=0;i<data.length;i++){let c=data.charCodeAt(i);if(c<32||c>126)c=63;codes.push(c-32);}}
+  let sum=codes[0];for(let k=1;k<codes.length;k++)sum+=codes[k]*k;codes.push(sum%103);codes.push(106);return codes;
+}
+function barcodeSVG(data){
+  const codes=code128Codes(data),widths=codes.map(v=>PATTERNS[v]).join(""),quiet=10;
+  let x=quiet,rects="";
+  for(let i=0;i<widths.length;i++){const w=parseInt(widths[i],10);if(i%2===0)rects+=`<rect x="${x}" y="0" width="${w}" height="100"/>`;x+=w;}
+  return `<svg viewBox="0 0 ${x+quiet} 100" preserveAspectRatio="none">${rects}</svg>`;
+}
+
+/* ===================== App ===================== */
+const $=id=>document.getElementById(id);
+let entries=[];
+const SETTING_IDS=["cols","rows","lw","lh","mt","ml","gx","gy","ox","oy","bh","bw","fs","scale","tf","tmax"];
+function cfg(){
+  const c={};SETTING_IDS.forEach(id=>c[id]=parseFloat($(id).value)||0);
+  c.cols=Math.max(1,Math.round(c.cols));c.rows=Math.max(1,Math.round(c.rows));
+  c.perPage=c.cols*c.rows;return c;
+}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+function renderTable(){
+  const tb=$("tbody");tb.innerHTML="";let total=0;
+  entries.forEach((e,i)=>{total+=e.qty;const tr=document.createElement("tr");
+    tr.innerHTML=`<td>${escapeHtml(e.code)}</td><td>${e.qty}</td><td>${escapeHtml(e.text||"")}</td><td><button class="btn-danger" data-i="${i}">${t("remove")}</button></td>`;tb.appendChild(tr);});
+  const c=cfg();$("perPage").textContent=c.perPage;$("totalCount").textContent=total;
+  $("sheetCount").textContent=Math.ceil(total/c.perPage)||0;
+}
+function addEntry(code,qty,text){
+  code=(code||"").trim();qty=parseInt(qty,10);text=(text||"").trim();
+  if(!code||!qty||qty<1)return false;
+  const ex=entries.find(e=>e.code===code&&(e.text||"")===text);
+  if(ex)ex.qty+=qty;else entries.push({code,qty,text});
+  renderTable();return true;
+}
+function styleGrid(grid,c){
+  grid.style.gridTemplateColumns=`repeat(${c.cols},${c.lw}mm)`;
+  grid.style.gridTemplateRows=`repeat(${c.rows},${c.lh}mm)`;
+  grid.style.columnGap=c.gx+"mm";grid.style.rowGap=c.gy+"mm";
+  grid.style.transformOrigin="0 0";
+  grid.style.transform=`translate(${c.ml+c.ox}mm,${c.mt+c.oy}mm) scale(${(c.scale||100)/100})`;
+}
+function buildPage(items){
+  const c=cfg();const showText=$("showText").checked;
+  const page=document.createElement("div");page.className="page"+($("borders").checked?" show-borders":"");
+  const grid=document.createElement("div");grid.className="grid";styleGrid(grid,c);
+  let html="";
+  for(const it of items){
+    if(it===null){html+=`<div class="label"></div>`;continue;}
+    const textLine=(showText&&it.text)?`<div class="txt" style="font-size:${c.tf}mm">${escapeHtml(it.text)}</div>`:"";
+    html+=`<div class="label"><div style="width:${c.bw||100}%;height:${c.bh}mm">${barcodeSVG(it.code)}</div>`+
+          `<div class="num" style="font-size:${c.fs}mm">${escapeHtml(it.code)}</div>${textLine}</div>`;
+  }
+  grid.innerHTML=html;
+  grid.querySelectorAll(".label svg").forEach(s=>s.style.height="100%");
+  page.appendChild(grid);return page;
+}
+function generate(){
+  const c=cfg();const flat=[];
+  entries.forEach(e=>{for(let i=0;i<e.qty;i++)flat.push({code:e.code,text:e.text});});
+  const wrap=$("sheetWrap");wrap.innerHTML="";
+  if(flat.length===0)return false;
+  for(let p=0;p<flat.length;p+=c.perPage)wrap.appendChild(buildPage(flat.slice(p,p+c.perPage)));
+  return true;
+}
+
+/* ---- events ---- */
+$("langBtn").onclick=()=>applyLang(currentLang==="en"?"ar":"en");
+$("addBtn").onclick=()=>{if(addEntry($("code").value,$("qty").value,$("txt").value)){$("code").value="";$("txt").value="";$("code").focus();}};
+$("code").addEventListener("keydown",e=>{if(e.key==="Enter")$("addBtn").click();});
+$("txt").addEventListener("keydown",e=>{if(e.key==="Enter")$("addBtn").click();});
+$("bulkBtn").onclick=()=>{
+  $("bulk").value.split(/\r?\n/).forEach(line=>{const s=line.trim();if(!s)return;
+    const m=s.match(/^(\S+)[\s,;\t]+(\d+)(?:[\s,;\t]+(.*))?$/);
+    if(m)addEntry(m[1],m[2],m[3]);else addEntry(s,1);});
+  $("bulk").value="";};
+$("tmax").addEventListener("input",()=>{const n=Math.max(1,parseInt($("tmax").value,10)||24);$("txt").maxLength=n;});
+$("tbody").addEventListener("click",e=>{if(e.target.dataset.i!==undefined){entries.splice(+e.target.dataset.i,1);renderTable();}});
+$("clearBtn").onclick=()=>{entries=[];renderTable();$("sheetWrap").innerHTML="";};
+$("genBtn").onclick=()=>{if(generate())$("sheetWrap").scrollIntoView({behavior:"smooth"});};
+$("printBtn").onclick=()=>{if($("sheetWrap").children.length===0)generate();setTimeout(()=>window.print(),100);};
+SETTING_IDS.forEach(id=>$(id).addEventListener("input",renderTable));
+
+$("testBtn").onclick=()=>{
+  const c=cfg();const wrap=$("sheetWrap");wrap.innerHTML="";
+  const page=document.createElement("div");page.className="page show-borders";
+  const grid=document.createElement("div");grid.className="grid";styleGrid(grid,c);
+  let html="";
+  for(let i=1;i<=c.perPage;i++)html+=`<div class="label" style="justify-content:center"><div class="num" style="font-size:${Math.max(c.fs,2.4)}mm">#${i}</div></div>`;
+  grid.innerHTML=html;page.appendChild(grid);wrap.appendChild(page);
+  setTimeout(()=>window.print(),100);
+};
+
+$("saveBtn").onclick=()=>{
+  const s={};SETTING_IDS.forEach(id=>s[id]=$(id).value);s.borders=$("borders").checked;s.showText=$("showText").checked;
+  localStorage.setItem("labelCfg",JSON.stringify(s));$("saveBtn").textContent=t("saved");
+  setTimeout(()=>$("saveBtn").textContent=t("saveBtn"),1500);
+};
+$("showText").addEventListener("change",()=>{if($("sheetWrap").children.length)generate();});
+
+/* ---- init ---- */
+(function loadCfg(){try{const s=JSON.parse(localStorage.getItem("labelCfg"));if(s){SETTING_IDS.forEach(id=>{if(s[id]!==undefined)$(id).value=s[id];});if(s.borders)$("borders").checked=true;if(s.showText)$("showText").checked=true;}}catch(e){}})();
+$("txt").maxLength=Math.max(1,parseInt($("tmax").value,10)||24);
+applyLang(localStorage.getItem("labelLang")||"ar");
+renderTable();
+</script>
+</body>
+</html>
