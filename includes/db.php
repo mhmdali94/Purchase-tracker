@@ -20,6 +20,34 @@ $options = [
 
 try {
     $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
+
+    // ---- الهجرات التلقائية (Auto-migrations) ----
+    try {
+        // تحقق من وجود عمود 'attention' في جدول 'orders'
+        $colCheck = $pdo->query("SHOW COLUMNS FROM `orders` LIKE 'attention'")->fetch();
+        if (!$colCheck) {
+            $pdo->exec("ALTER TABLE `orders` 
+                ADD COLUMN `attention` VARCHAR(150) NULL AFTER `notes`,
+                ADD COLUMN `delivery_period` VARCHAR(100) NULL DEFAULT '10 أيام' AFTER `attention`,
+                ADD COLUMN `payment_terms` VARCHAR(255) NULL DEFAULT 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات' AFTER `delivery_period`,
+                ADD COLUMN `delivery_location` VARCHAR(255) NULL AFTER `payment_terms`"
+            );
+        }
+
+        // تحقق من وجود عمود 'notes' في جدول 'order_items'
+        $colCheck2 = $pdo->query("SHOW COLUMNS FROM `order_items` LIKE 'notes'")->fetch();
+        if (!$colCheck2) {
+            $pdo->exec("ALTER TABLE `order_items` ADD COLUMN `notes` VARCHAR(255) NULL");
+        }
+
+        // تحقق من وجود عمود 'custom_order_number' في جدول 'orders'
+        $colCheck3 = $pdo->query("SHOW COLUMNS FROM `orders` LIKE 'custom_order_number'")->fetch();
+        if (!$colCheck3) {
+            $pdo->exec("ALTER TABLE `orders` ADD COLUMN `custom_order_number` VARCHAR(50) NULL AFTER `notes`");
+        }
+    } catch (PDOException $ex) {
+        // تجاهل أخطاء الهجرة إن حدثت لكي لا ينهار التطبيق
+    }
 } catch (PDOException $e) {
     // رسالة واضحة بالعربية في حال فشل الاتصال
     http_response_code(500);

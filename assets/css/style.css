@@ -126,6 +126,77 @@ main {
 }
 .table td, .table th { vertical-align: middle; }
 
+/* ---- صور الأصناف ---- */
+
+/* صورة مصغّرة في جدول الأصناف — قابلة للنقر */
+.item-thumb {
+    width: 44px;
+    height: 44px;
+    object-fit: cover;
+    border-radius: .65rem;
+    border: 2px solid #e2e8f0;
+    cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+    display: block;
+}
+.item-thumb:hover {
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(15,23,42,.18);
+    border-color: var(--brand);
+}
+
+/* placeholder لعندما لا توجد صورة */
+.item-thumb-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: .65rem;
+    background: #f1f5f9;
+    font-size: 1.4rem;
+    color: #94a3b8;
+}
+
+/* صورة كبيرة في مودال العرض */
+.item-thumb-lg {
+    max-width: 100%;
+    max-height: 70vh;
+    border-radius: .75rem;
+    object-fit: contain;
+}
+
+/* صورة حالية + معاينة داخل نموذج التعديل */
+.item-thumb-form {
+    width: 120px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: .75rem;
+    border: 2px solid #e2e8f0;
+    display: block;
+}
+
+/* صورة في صفحة تاريخ الصنف (بجانب العنوان) */
+.item-thumb-history {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: .9rem;
+    border: 2px solid #e2e8f0;
+    flex-shrink: 0;
+}
+.item-thumb-history-placeholder {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    border-radius: .9rem;
+    background: #f1f5f9;
+    font-size: 2.2rem;
+    flex-shrink: 0;
+}
+
 /* صف أقل سعر في تاريخ الصنف */
 .lowest-price {
     background: #d1fae5 !important;
@@ -455,26 +526,39 @@ main {
     #orderLines tr.order-line td:nth-child(1) {
         grid-column: span 2;
         margin-bottom: 0.25rem;
+        order: 1;
     }
     
     #orderLines tr.order-line td:nth-child(2) {
         grid-column: span 1;
+        order: 2;
     }
     
     #orderLines tr.order-line td:nth-child(3) {
         grid-column: span 1;
+        order: 3;
+    }
+    
+    #orderLines tr.order-line td:nth-child(5) {
+        grid-column: span 2;
+        order: 4;
+        padding-top: 0.5rem !important;
+        border-top: 1px solid #f1f5f9 !important;
+        margin-top: 0.5rem;
     }
     
     #orderLines tr.order-line td:nth-child(4) {
         grid-column: span 1;
+        order: 5;
         align-self: center;
         padding-top: 0.5rem !important;
         border-top: 1px solid #f1f5f9 !important;
         margin-top: 0.5rem;
     }
     
-    #orderLines tr.order-line td:nth-child(5) {
+    #orderLines tr.order-line td:nth-child(6) {
         grid-column: span 1;
+        order: 6;
         text-align: left;
         padding-top: 0.5rem !important;
         border-top: 1px solid #f1f5f9 !important;
@@ -510,6 +594,15 @@ main {
     
     #orderLines tr.order-line td:nth-child(4)::before {
         content: "إجمالي السطر";
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(5)::before {
+        content: "ملاحظات السطر";
         font-weight: 700;
         font-size: 0.85rem;
         color: var(--muted);

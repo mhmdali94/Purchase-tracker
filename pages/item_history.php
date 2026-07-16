@@ -28,7 +28,7 @@ $chart_values = [];
 $min_price = null;
 
 if ($item_id > 0) {
-    $st = $pdo->prepare('SELECT * FROM items WHERE id = ?');
+    $st = $pdo->prepare('SELECT *, (photo IS NOT NULL) AS has_photo FROM items WHERE id = ?');
     $st->execute([$item_id]);
     $item = $st->fetch();
 
@@ -102,9 +102,18 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="alert alert-warning">الصنف غير موجود.</div>
 <?php elseif ($item): ?>
 
-    <h2 class="h5 mb-3">📦 <?= e($item_name !== '' ? $item_name : 'صنف رقم ' . (int)$item_id) ?>
-        <?php if ($item_specs !== ''): ?><small class="text-muted">— <?= e($item_specs) ?></small><?php endif; ?>
-    </h2>
+    <div class="d-flex align-items-center gap-3 mb-3">
+        <?php if (!empty($item['has_photo'])): ?>
+            <img src="ajax/item_photo.php?id=<?= (int)$item_id ?>"
+                 alt="<?= e($item_name) ?>" class="item-thumb-history">
+        <?php else: ?>
+            <span class="item-thumb-history-placeholder">📦</span>
+        <?php endif; ?>
+        <h2 class="h5 mb-0">
+            <?= e($item_name !== '' ? $item_name : 'صنف رقم ' . (int)$item_id) ?>
+            <?php if ($item_specs !== ''): ?><small class="text-muted">— <?= e($item_specs) ?></small><?php endif; ?>
+        </h2>
+    </div>
 
     <?php if (!$rows): ?>
         <div class="alert alert-info">لم يُشترَ هذا الصنف في أي أوردر بعد.</div>

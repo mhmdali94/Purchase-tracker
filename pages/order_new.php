@@ -17,16 +17,22 @@ $order_id = (int) ($_GET['id'] ?? 0);
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     csrf_check();
 
-    $post_order_id = (int) ($_POST['order_id'] ?? 0);
-    $vendor_id     = (int) ($_POST['vendor_id'] ?? 0);
-    $order_date    = $_POST['order_date'] ?? date('Y-m-d');
-    $usd_rate      = (float) str_replace(',', '', $_POST['usd_rate'] ?? '0');
-    $notes         = trim($_POST['notes'] ?? '');
+    $post_order_id       = (int) ($_POST['order_id'] ?? 0);
+    $vendor_id           = (int) ($_POST['vendor_id'] ?? 0);
+    $order_date          = $_POST['order_date'] ?? date('Y-m-d');
+    $usd_rate            = (float) str_replace(',', '', $_POST['usd_rate'] ?? '0');
+    $notes               = trim($_POST['notes'] ?? '');
+    $attention           = trim($_POST['attention'] ?? '');
+    $delivery_period     = trim($_POST['delivery_period'] ?? '10 أيام');
+    $payment_terms       = trim($_POST['payment_terms'] ?? 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات');
+    $delivery_location   = trim($_POST['delivery_location'] ?? '');
+    $custom_order_number = trim($_POST['custom_order_number'] ?? '');
 
     // مصفوفات السطور
-    $item_ids = $_POST['item_id']    ?? [];
-    $qtys     = $_POST['quantity']   ?? [];
-    $prices   = $_POST['unit_price'] ?? [];
+    $item_ids   = $_POST['item_id']    ?? [];
+    $qtys       = $_POST['quantity']   ?? [];
+    $prices     = $_POST['unit_price'] ?? [];
+    $line_notes = $_POST['line_notes'] ?? [];
 
     // بناء سطور صالحة فقط
     $lines = [];
@@ -34,8 +40,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $iid = (int) $item_ids[$i];
         $q   = (float) ($qtys[$i] ?? 0);
         $p   = (float) ($prices[$i] ?? 0);
+        $ln_note = trim($line_notes[$i] ?? '');
         if ($iid > 0 && $q > 0) {
-            $lines[] = ['item_id' => $iid, 'quantity' => $q, 'unit_price' => $p];
+            $lines[] = [
+                'item_id'    => $iid,
+                'quantity'   => $q,
+                'unit_price' => $p,
+                'notes'      => $ln_note
+            ];
         }
     }
 
@@ -56,21 +68,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($post_order_id > 0) {
             // تعديل: تحديث رأس الأوردر ثم استبدال سطوره
-            $stmt = $pdo->prepare('UPDATE orders SET vendor_id=?, order_date=?, usd_rate=?, notes=? WHERE id=?');
-            $stmt->execute([$vendor_id, $order_date, $usd_rate, $notes, $post_order_id]);
+            $stmt = $pdo->prepare('UPDATE orders SET vendor_id=?, order_date=?, usd_rate=?, notes=?, attention=?, delivery_period=?, payment_terms=?, delivery_location=?, custom_order_number=? WHERE id=?');
+            $stmt->execute([$vendor_id, $order_date, $usd_rate, $notes, $attention, $delivery_period, $payment_terms, $delivery_location, $custom_order_number, $post_order_id]);
             $pdo->prepare('DELETE FROM order_items WHERE order_id = ?')->execute([$post_order_id]);
             $oid = $post_order_id;
         } else {
             // جديد
-            $stmt = $pdo->prepare('INSERT INTO orders (vendor_id, order_date, usd_rate, notes) VALUES (?,?,?,?)');
-            $stmt->execute([$vendor_id, $order_date, $usd_rate, $notes]);
+            $stmt = $pdo->prepare('INSERT INTO orders (vendor_id, order_date, usd_rate, notes, attention, delivery_period, payment_terms, delivery_location, custom_order_number) VALUES (?,?,?,?,?,?,?,?,?)');
+            $stmt->execute([$vendor_id, $order_date, $usd_rate, $notes, $attention, $delivery_period, $payment_terms, $delivery_location, $custom_order_number]);
             $oid = (int) $pdo->lastInsertId();
         }
 
-        // إدراج السطور (line_total عمود محسوب في قاعدة البيانات)
-        $li = $pdo->prepare('INSERT INTO order_items (order_id, item_id, quantity, unit_price_egp) VALUES (?,?,?,?)');
+        // إدراج السطور (notes مضاف حديثاً)
+        $li = $pdo->prepare('INSERT INTO order_items (order_id, item_id, quantity, unit_price_egp, notes) VALUES (?,?,?,?,?)');
         foreach ($lines as $ln) {
-            $li->execute([$oid, $ln['item_id'], $ln['quantity'], $ln['unit_price']]);
+            $li->execute([$oid, $ln['item_id'], $ln['quantity'], $ln['unit_price'], $ln['notes']]);
         }
 
         $pdo->commit();
@@ -173,6 +185,30 @@ require_once __DIR__ . '/../includes/header.php';
                            value="<?= $is_edit ? e($order['notes']) : '' ?>" placeholder="اختياري">
                 </div>
             </div>
+            
+            <!-- حقول أمر التوريد الإضافية (Sina Cosmetics PO) -->
+            <div class="row g-3 mt-1">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">عناية / المسؤول</label>
+                    <input type="text" name="attention" class="form-control form-control-lg"
+                           value="<?= $is_edit ? e($order['attention'] ?? '') : '' ?>" placeholder="أ. تامر انور">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">مدة التوريد</label>
+                    <input type="text" name="delivery_period" class="form-control form-control-lg"
+                           value="<?= $is_edit ? e($order['delivery_period'] ?? '10 أيام') : '10 أيام' ?>" placeholder="10 أيام">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">شروط السداد</label>
+                    <input type="text" name="payment_terms" class="form-control form-control-lg"
+                           value="<?= $is_edit ? e($order['payment_terms'] ?? 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات') : 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات' ?>">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">مكان التسليم</label>
+                    <input type="text" name="delivery_location" class="form-control form-control-lg"
+                           value="<?= $is_edit ? e($order['delivery_location'] ?? '') : '' ?>" placeholder="المصنع / المخزن">
+                </div>
+            </div>
         </div>
     </div>
 
@@ -192,7 +228,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <thead>
                         <tr>
                             <th>الصنف</th><th>الكمية</th>
-                            <th>سعر الوحدة (ج.م)</th><th>الإجمالي</th><th></th>
+                            <th>سعر الوحدة (ج.م)</th><th>الإجمالي</th><th>ملاحظات السطر</th><th></th>
                         </tr>
                     </thead>
                     <tbody id="orderLines">
@@ -217,6 +253,10 @@ require_once __DIR__ . '/../includes/header.php';
                                                class="form-control price-input" value="<?= e($ln['unit_price_egp']) ?>" placeholder="سعر الوحدة" required>
                                     </td>
                                     <td class="line-total-cell">0.00 ج.م</td>
+                                    <td style="min-width:150px">
+                                        <input type="text" name="line_notes[]" class="form-control line-note-input"
+                                               value="<?= e($ln['notes'] ?? '') ?>" placeholder="مثال: مثل ما تم توريده...">
+                                    </td>
                                     <td><button type="button" class="btn btn-outline-danger btn-sm remove-line" title="حذف السطر">🗑️</button></td>
                                 </tr>
                             <?php endforeach; ?>

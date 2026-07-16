@@ -50,10 +50,11 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
     <h1 class="h3 fw-bold mb-0">🧾 أوردر رقم <?= (int)$order['id'] ?></h1>
-    <div class="d-flex gap-2">
+    <div class="d-flex gap-2 flex-wrap">
         <a href="index.php?page=orders" class="btn btn-outline-secondary">↩️ رجوع</a>
+        <a href="index.php?page=order_print&id=<?= (int)$order['id'] ?>" target="_blank" class="btn btn-success">🖨️ طباعة أمر التوريد</a>
         <a href="index.php?page=order_new&id=<?= (int)$order['id'] ?>" class="btn btn-primary">✏️ تعديل</a>
-        <form method="post" class="js-confirm-delete" data-confirm="حذف هذا الأوردر نهائياً؟">
+        <form method="post" class="d-inline js-confirm-delete" data-confirm="حذف هذا الأوردر نهائياً؟">
             <?= csrf_field() ?>
             <input type="hidden" name="action" value="delete">
             <input type="hidden" name="id" value="<?= (int)$order['id'] ?>">
@@ -85,6 +86,25 @@ require_once __DIR__ . '/../includes/header.php';
                 <div class="text-muted small">أُنشئ في</div>
                 <div class="fw-bold"><?= fmt_datetime($order['created_at']) ?></div>
             </div>
+            
+            <!-- حقول أمر التوريد الإضافية (Sina Cosmetics PO) -->
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">عناية / المسؤول</div>
+                <div class="fw-bold"><?= $order['attention'] ? e($order['attention']) : '—' ?></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">مدة التوريد</div>
+                <div class="fw-bold"><?= e($order['delivery_period'] ?? '10 أيام') ?></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">شروط السداد</div>
+                <div class="fw-bold"><?= e($order['payment_terms'] ?? 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات') ?></div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="text-muted small">مكان التسليم</div>
+                <div class="fw-bold"><?= $order['delivery_location'] ? e($order['delivery_location']) : '—' ?></div>
+            </div>
+            
             <?php if ($order['notes']): ?>
                 <div class="col-12">
                     <div class="text-muted small">ملاحظات</div>
@@ -105,6 +125,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <tr>
                         <th>الصنف</th><th>الكمية</th>
                         <th>سعر الوحدة (ج.م)</th><th>الإجمالي (ج.م)</th>
+                        <th>ملاحظات</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -125,12 +146,13 @@ require_once __DIR__ . '/../includes/header.php';
                                 <b><?= money_egp($ln['line_total']) ?></b>
                                 <span class="usd-note"><?= usd_equiv($ln['line_total'], $order['usd_rate']) ?></span>
                             </td>
+                            <td><?= e($ln['notes'] ?? '') ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
                 <tfoot>
                     <tr class="table-light">
-                        <th colspan="3" class="text-end">الإجمالي الكلي</th>
+                        <th colspan="4" class="text-end">الإجمالي الكلي</th>
                         <th>
                             <?= money_egp($total) ?>
                             <span class="usd-note"><?= usd_equiv($total, $order['usd_rate']) ?></span>

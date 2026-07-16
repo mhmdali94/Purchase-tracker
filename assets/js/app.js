@@ -108,6 +108,9 @@ document.addEventListener('submit', function (ev) {
                 'class="form-control price-input" placeholder="سعر الوحدة" required>' +
             '</td>' +
             '<td class="line-total-cell">0.00 ج.م</td>' +
+            '<td style="min-width:150px">' +
+                '<input type="text" name="line_notes[]" class="form-control line-note-input" placeholder="مثال: مثل ما تم توريده...">' +
+            '</td>' +
             '<td><button type="button" class="btn btn-outline-danger btn-sm remove-line" title="حذف السطر">🗑️</button></td>';
         linesBody.appendChild(tr);
 
