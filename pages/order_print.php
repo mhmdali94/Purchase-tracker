@@ -274,22 +274,25 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
             font-size: 13px;
             font-weight: 600;
             display: flex;
-            flex-direction: column;
-            gap: 8px;
+            justify-content: space-between;
+            gap: 16px;
         }
         .sig-row {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            flex: 1 1 0;
+            min-width: 0;
         }
         .sig-label {
-            min-width: 55px;
             flex-shrink: 0;
+            white-space: nowrap;
         }
         .sig-line {
             flex-grow: 1;
             border-bottom: 1px dashed #000;
             height: 16px;
+            min-width: 30px;
         }
 
         /* معرض صور الأصناف للمرجعية */
