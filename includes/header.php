@@ -32,7 +32,7 @@ $nav = [
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title><?= e($page_title) ?> — <?= e(APP_NAME) ?></title>
 
     <!-- Bootstrap 5 RTL (بدون أدوات بناء — من CDN) -->
@@ -44,6 +44,32 @@ $nav = [
     <link href="assets/css/style.css" rel="stylesheet">
 </head>
 <body>
+
+<!-- شريط التنقّل السفلي للهواتف -->
+<div class="mobile-bottom-nav d-md-none">
+    <a href="index.php?page=dashboard" class="mobile-bottom-nav-item <?= $active === 'dashboard' ? 'active' : '' ?>">
+        <span class="icon">🏠</span>
+        <span class="label">الرئيسية</span>
+    </a>
+    <a href="index.php?page=orders" class="mobile-bottom-nav-item <?= $active === 'orders' ? 'active' : '' ?>">
+        <span class="icon">📋</span>
+        <span class="label">الأوردرات</span>
+    </a>
+    <a href="index.php?page=order_new" class="mobile-bottom-nav-item <?= $active === 'order_new' ? 'active' : '' ?>">
+        <div class="plus-icon-wrapper">
+            <span class="icon">➕</span>
+        </div>
+        <span class="label">أوردر جديد</span>
+    </a>
+    <a href="index.php?page=item_history" class="mobile-bottom-nav-item <?= $active === 'item_history' ? 'active' : '' ?>">
+        <span class="icon">🔍</span>
+        <span class="label">بحث صنف</span>
+    </a>
+    <a href="index.php?page=settings" class="mobile-bottom-nav-item <?= $active === 'settings' ? 'active' : '' ?>">
+        <span class="icon">⚙️</span>
+        <span class="label">الإعدادات</span>
+    </a>
+</div>
 
 <!-- شريط التنقّل العلوي -->
 <nav class="navbar navbar-expand-xl navbar-dark app-navbar sticky-top">

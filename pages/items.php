@@ -147,7 +147,7 @@ require_once __DIR__ . '/../includes/header.php';
                 </div>
 
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle" id="itemsTable">
+                    <table class="table table-hover align-middle items-list-table" id="itemsTable">
                         <thead>
                             <tr>
                                 <th>الاسم / المواصفات</th><th>الوحدة</th>

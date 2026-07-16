@@ -103,7 +103,7 @@ require_once __DIR__ . '/../includes/header.php';
             <div class="p-4 text-center text-muted">لا توجد أوردرات مطابقة.</div>
         <?php else: ?>
             <div class="table-responsive">
-                <table class="table table-hover mb-0 align-middle">
+                <table class="table table-hover mb-0 align-middle orders-list-table">
                     <thead>
                         <tr>
                             <th>#</th><th>التاريخ</th><th>المورد</th>

@@ -114,7 +114,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <div class="p-4 text-center text-muted">لا يوجد موردون بعد.</div>
                 <?php else: ?>
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
+                        <table class="table table-hover mb-0 align-middle vendors-list-table">
                             <thead>
                                 <tr>
                                     <th>الاسم</th><th>الهاتف</th><th>العنوان</th>

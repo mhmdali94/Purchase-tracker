@@ -184,6 +184,350 @@ main {
     border-top: 1px solid #e5e9f2;
 }
 
+/* ---- شريط التنقّل السفلي للهواتف ---- */
+@media (max-width: 767.98px) {
+    body {
+        padding-bottom: calc(75px + env(safe-area-inset-bottom)) !important;
+    }
+    
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: calc(65px + env(safe-area-inset-bottom));
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        z-index: 1030;
+        padding-bottom: env(safe-area-inset-bottom);
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.05);
+    }
+    
+    .mobile-bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: var(--muted);
+        text-decoration: none;
+        font-size: 0.7rem;
+        font-weight: 600;
+        flex: 1;
+        height: 100%;
+        transition: all 0.2s ease;
+    }
+    
+    .mobile-bottom-nav-item:hover,
+    .mobile-bottom-nav-item.active {
+        color: var(--brand);
+    }
+    
+    .mobile-bottom-nav-item .icon {
+        font-size: 1.25rem;
+        margin-bottom: 2px;
+        transition: transform 0.2s ease;
+    }
+    
+    .mobile-bottom-nav-item.active .icon {
+        transform: translateY(-2px);
+    }
+    
+    /* زر أوردر جديد مميز في الوسط */
+    .plus-icon-wrapper {
+        background: linear-gradient(135deg, var(--brand), var(--brand-2));
+        color: #fff;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 10px rgba(13, 110, 253, 0.35);
+        margin-top: -15px;
+        border: 3px solid #fff;
+        transition: transform 0.2s ease;
+    }
+    
+    .mobile-bottom-nav-item:active .plus-icon-wrapper {
+        transform: scale(0.9) translateY(-10px);
+    }
+    
+    .mobile-bottom-nav-item.active .plus-icon-wrapper {
+        transform: translateY(-10px);
+        box-shadow: 0 6px 14px rgba(13, 110, 253, 0.45);
+    }
+    
+    .mobile-bottom-nav-item.active .plus-icon-wrapper + .label {
+        font-weight: 700;
+    }
+}
+
+/* ---- تحويل الجداول إلى كروت على الموبايل ---- */
+@media (max-width: 767.98px) {
+    /* تطبيق على الجداول المحددة */
+    .orders-list-table,
+    .items-list-table,
+    .vendors-list-table,
+    .order-view-table {
+        display: block;
+        width: 100% !important;
+        border: none !important;
+    }
+    
+    .orders-list-table thead,
+    .items-list-table thead,
+    .vendors-list-table thead,
+    .order-view-table thead,
+    .orders-list-table tfoot,
+    .order-view-table tfoot {
+        display: none !important;
+    }
+    
+    .orders-list-table tbody,
+    .items-list-table tbody,
+    .vendors-list-table tbody,
+    .order-view-table tbody {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        padding: 0.25rem;
+    }
+    
+    .orders-list-table tr,
+    .items-list-table tr,
+    .vendors-list-table tr,
+    .order-view-table tr {
+        display: block;
+        background: #fff;
+        border: 1px solid #eef2f6 !important;
+        border-radius: 1rem !important;
+        padding: 1.25rem !important;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, .03) !important;
+        margin-bottom: 0 !important;
+        position: relative;
+    }
+    
+    .orders-list-table td,
+    .items-list-table td,
+    .vendors-list-table td,
+    .order-view-table td {
+        display: flex !important;
+        justify-content: space-between;
+        align-items: center;
+        width: 100% !important;
+        border: none !important;
+        padding: 0.4rem 0 !important;
+        min-width: 0 !important;
+        text-align: left !important;
+    }
+    
+    .orders-list-table td > *,
+    .items-list-table td > *,
+    .vendors-list-table td > *,
+    .order-view-table td > * {
+        text-align: left;
+    }
+
+    .orders-list-table td::before,
+    .items-list-table td::before,
+    .vendors-list-table td::before,
+    .order-view-table td::before {
+        font-weight: 700;
+        color: var(--muted);
+        font-size: 0.85rem;
+        margin-inline-end: 1rem;
+        flex-shrink: 0;
+        display: inline-block;
+    }
+    
+    /* تخصيص مظهر كرت الأوردر */
+    .orders-list-table td:nth-child(1)::before { content: "رقم الأوردر"; }
+    .orders-list-table td:nth-child(2)::before { content: "التاريخ"; }
+    .orders-list-table td:nth-child(3)::before { content: "المورد"; }
+    .orders-list-table td:nth-child(4)::before { content: "الأصناف"; }
+    .orders-list-table td:nth-child(5)::before { content: "إجمالي الأوردر"; }
+    .orders-list-table td:nth-child(6)::before { content: "سعر الدولار"; }
+    
+    .orders-list-table td:nth-child(3) {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--ink);
+    }
+    .orders-list-table td:nth-child(5) {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--brand-dark);
+    }
+    
+    .orders-list-table td:nth-child(7),
+    .items-list-table td:nth-child(4),
+    .vendors-list-table td:nth-child(5) {
+        border-top: 1px solid #f1f5f9 !important;
+        padding-top: 0.75rem !important;
+        margin-top: 0.5rem;
+        justify-content: flex-end !important;
+    }
+    .orders-list-table td:nth-child(7)::before,
+    .items-list-table td:nth-child(4)::before,
+    .vendors-list-table td:nth-child(5)::before {
+        display: none;
+    }
+    
+    /* تخصيص مظهر كرت الأصناف */
+    .items-list-table td:nth-child(1)::before { content: "الصنف"; }
+    .items-list-table td:nth-child(2)::before { content: "الوحدة"; }
+    .items-list-table td:nth-child(3)::before { content: "المجموعة"; }
+    
+    .items-list-table td:nth-child(1) {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    
+    /* تخصيص مظهر كرت الموردين */
+    .vendors-list-table td:nth-child(1)::before { content: "المورد"; }
+    .vendors-list-table td:nth-child(2)::before { content: "الهاتف"; }
+    .vendors-list-table td:nth-child(3)::before { content: "العنوان"; }
+    .vendors-list-table td:nth-child(4)::before { content: "عدد الأوردرات"; }
+    
+    .vendors-list-table td:nth-child(1) {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    
+    /* تفاصيل الأوردر للقراءة */
+    .order-view-table td:nth-child(1)::before { content: "الصنف"; }
+    .order-view-table td:nth-child(2)::before { content: "الكمية"; }
+    .order-view-table td:nth-child(3)::before { content: "سعر الوحدة"; }
+    .order-view-table td:nth-child(4)::before { content: "إجمالي السطر"; }
+    
+    .order-view-table td:nth-child(1) {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    .order-view-table td:nth-child(4) {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--brand-dark);
+    }
+}
+
+/* ---- نموذج الأوردر: تحويل الجدول إلى شبكة كروت مدخلات على الجوال ---- */
+@media (max-width: 767.98px) {
+    #orderForm .table-responsive {
+        overflow-x: visible !important;
+    }
+    
+    #orderLines {
+        display: flex;
+        flex-direction: column;
+        gap: 1.25rem;
+        padding: 0 !important;
+    }
+    
+    #orderForm table thead {
+        display: none !important;
+    }
+    
+    #orderLines tr.order-line {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+        background: #fff;
+        border: 1px solid #eef2f6;
+        border-radius: 1rem;
+        padding: 1.25rem;
+        box-shadow: 0 4px 12px rgba(15, 23, 42, .03);
+        position: relative;
+    }
+    
+    #orderLines tr.order-line td {
+        display: block;
+        width: 100% !important;
+        min-width: 0 !important;
+        padding: 0 !important;
+        border: none !important;
+    }
+    
+    #orderLines tr.order-line td:nth-child(1) {
+        grid-column: span 2;
+        margin-bottom: 0.25rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(2) {
+        grid-column: span 1;
+    }
+    
+    #orderLines tr.order-line td:nth-child(3) {
+        grid-column: span 1;
+    }
+    
+    #orderLines tr.order-line td:nth-child(4) {
+        grid-column: span 1;
+        align-self: center;
+        padding-top: 0.5rem !important;
+        border-top: 1px solid #f1f5f9 !important;
+        margin-top: 0.5rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(5) {
+        grid-column: span 1;
+        text-align: left;
+        padding-top: 0.5rem !important;
+        border-top: 1px solid #f1f5f9 !important;
+        margin-top: 0.5rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(1)::before {
+        content: "الصنف";
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(2)::before {
+        content: "الكمية";
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(3)::before {
+        content: "سعر الوحدة (ج.م)";
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+    
+    #orderLines tr.order-line td:nth-child(4)::before {
+        content: "إجمالي السطر";
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: var(--muted);
+        display: block;
+        margin-bottom: 0.35rem;
+    }
+    
+    #orderLines tr.order-line .line-total-cell {
+        font-size: 1.1rem;
+    }
+    
+    #orderLines tr.order-line .remove-line {
+        width: 100%;
+        padding: 0.4rem;
+        font-size: 0.95rem;
+    }
+}
+
 /* على الشاشات الصغيرة: مسافات مريحة */
 @media (max-width: 576px) {
     .stat-card .stat-number { font-size: 1.8rem; }

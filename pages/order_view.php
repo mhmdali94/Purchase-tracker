@@ -100,7 +100,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="card-header">📦 أصناف الأوردر (<?= count($lines) ?>)</div>
     <div class="card-body p-0">
         <div class="table-responsive">
-            <table class="table mb-0 align-middle">
+            <table class="table mb-0 align-middle order-view-table">
                 <thead>
                     <tr>
                         <th>الصنف</th><th>الكمية</th>

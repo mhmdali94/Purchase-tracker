@@ -210,11 +210,11 @@ require_once __DIR__ . '/../includes/header.php';
                                     </td>
                                     <td style="min-width:110px">
                                         <input type="number" step="0.001" min="0.001" name="quantity[]"
-                                               class="form-control qty-input" value="<?= e($ln['quantity']) ?>" required>
+                                               class="form-control qty-input" value="<?= e($ln['quantity']) ?>" placeholder="الكمية" required>
                                     </td>
                                     <td style="min-width:130px">
                                         <input type="number" step="0.01" min="0" name="unit_price[]"
-                                               class="form-control price-input" value="<?= e($ln['unit_price_egp']) ?>" required>
+                                               class="form-control price-input" value="<?= e($ln['unit_price_egp']) ?>" placeholder="سعر الوحدة" required>
                                     </td>
                                     <td class="line-total-cell">0.00 ج.م</td>
                                     <td><button type="button" class="btn btn-outline-danger btn-sm remove-line" title="حذف السطر">🗑️</button></td>
