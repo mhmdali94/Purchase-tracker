@@ -45,6 +45,15 @@ try {
         if (!$colCheck3) {
             $pdo->exec("ALTER TABLE `orders` ADD COLUMN `custom_order_number` VARCHAR(50) NULL AFTER `notes`");
         }
+
+        // تحقق من وجود عمودي 'photo' و 'photo_mime' في جدول 'items' (صورة مرجعية للصنف)
+        $colCheck4 = $pdo->query("SHOW COLUMNS FROM `items` LIKE 'photo'")->fetch();
+        if (!$colCheck4) {
+            $pdo->exec("ALTER TABLE `items`
+                ADD COLUMN `photo` MEDIUMBLOB NULL,
+                ADD COLUMN `photo_mime` VARCHAR(20) NULL"
+            );
+        }
     } catch (PDOException $ex) {
         // تجاهل أخطاء الهجرة إن حدثت لكي لا ينهار التطبيق
     }

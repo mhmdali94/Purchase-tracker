@@ -104,7 +104,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="card-body">
         <form method="get" class="row g-2 align-items-end mb-3">
             <input type="hidden" name="page" value="reports">
-            <div class="col-md-9">
+            <div class="col-12 col-md-9">
                 <label class="form-label fw-bold">اختر الصنف</label>
                 <select name="cmp_item_id" class="form-select form-select-lg" onchange="this.form.submit()">
                     <option value="0">— اختر صنفاً —</option>
@@ -115,7 +115,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3 d-grid">
+            <div class="col-12 col-md-3 d-grid">
                 <button class="btn btn-primary btn-lg">عرض المقارنة</button>
             </div>
         </form>
@@ -157,15 +157,15 @@ require_once __DIR__ . '/../includes/header.php';
         <form method="get" class="row g-2 align-items-end">
             <input type="hidden" name="page" value="reports">
             <?php if ($cmp_item_id): ?><input type="hidden" name="cmp_item_id" value="<?= $cmp_item_id ?>"><?php endif; ?>
-            <div class="col-md-4">
+            <div class="col-6 col-md-4">
                 <label class="form-label fw-bold">من تاريخ</label>
                 <input type="date" name="from" class="form-control" value="<?= e($from) ?>">
             </div>
-            <div class="col-md-4">
+            <div class="col-6 col-md-4">
                 <label class="form-label fw-bold">إلى تاريخ</label>
                 <input type="date" name="to" class="form-control" value="<?= e($to) ?>">
             </div>
-            <div class="col-md-4 d-grid gap-1">
+            <div class="col-12 col-md-4 d-grid gap-1">
                 <button class="btn btn-primary">🔍 تطبيق على تقارير الإنفاق</button>
                 <a href="index.php?page=reports<?= $cmp_item_id ? '&cmp_item_id=' . $cmp_item_id : '' ?>"
                    class="btn btn-outline-secondary btn-sm">إلغاء الفلتر</a>
@@ -181,7 +181,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row g-4">
     <!-- (2) الإنفاق لكل مورد -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-header">🏪 الإنفاق لكل مورد</div>
             <div class="card-body p-0">
@@ -208,7 +208,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- (3) الإنفاق لكل مجموعة -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-header">🗂️ الإنفاق لكل مجموعة</div>
             <div class="card-body p-0">

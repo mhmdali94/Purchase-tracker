@@ -322,7 +322,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row g-4 justify-content-center">
     <!-- بيانات الدخول -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-header">🔐 بيانات الدخول</div>
             <div class="card-body">
@@ -356,7 +356,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- النسخ الاحتياطي والاستعادة -->
-    <div class="col-lg-6">
+    <div class="col-12 col-lg-6">
         <div class="card h-100">
             <div class="card-header">💾 النسخ الاحتياطي والاستعادة</div>
             <div class="card-body">
@@ -397,7 +397,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <!-- منطقة الخطر: تصفير كل البيانات -->
 <div class="row justify-content-center mt-4">
-    <div class="col-lg-12">
+    <div class="col-12">
         <div class="card border-danger">
             <div class="card-header text-danger">🧨 تصفير كل البيانات</div>
             <div class="card-body">
@@ -410,12 +410,12 @@ require_once __DIR__ . '/../includes/header.php';
                       data-confirm="سيتم حذف كل بياناتك نهائياً (أوردرات، أصناف، موردين، مجموعات). لا يمكن التراجع. هل أنت متأكد تماماً؟">
                     <?= csrf_field() ?>
                     <input type="hidden" name="action" value="reset_data">
-                    <div class="col-md-8">
+                    <div class="col-12 col-md-8">
                         <label class="form-label fw-bold">أكّد بكلمة المرور الحالية</label>
                         <input type="password" name="reset_password" class="form-control"
                                placeholder="أدخل كلمة المرور للتأكيد" required autocomplete="off">
                     </div>
-                    <div class="col-md-4 d-grid">
+                    <div class="col-12 col-md-4 d-grid">
                         <button type="submit" class="btn btn-danger btn-lg">🗑️ حذف كل البيانات</button>
                     </div>
                 </form>

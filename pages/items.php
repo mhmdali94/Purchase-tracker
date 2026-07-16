@@ -120,7 +120,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row g-4">
     <!-- النموذج -->
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
         <div class="card">
             <div class="card-header"><?= $edit ? '✏️ تعديل صنف' : '➕ إضافة صنف' ?></div>
             <div class="card-body">
@@ -207,17 +207,17 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- القائمة -->
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-header">قائمة الأصناف (<?= count($items) ?>)</div>
             <div class="card-body">
                 <!-- أدوات البحث والتصفية -->
                 <div class="row g-2 mb-3">
-                    <div class="col-md-7">
+                    <div class="col-12 col-md-7">
                         <input type="text" id="itemSearch" class="form-control"
                                placeholder="🔍 ابحث بالاسم أو المواصفات...">
                     </div>
-                    <div class="col-md-5">
+                    <div class="col-12 col-md-5">
                         <select id="categoryFilter" class="form-select">
                             <option value="">كل المجموعات</option>
                             <?php foreach ($categories as $c): ?>

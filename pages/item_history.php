@@ -80,7 +80,7 @@ require_once __DIR__ . '/../includes/header.php';
         <form method="get" class="row g-2 align-items-end" id="itemPickForm">
             <input type="hidden" name="page" value="item_history">
             <input type="hidden" name="item_id" id="pickedItemId" value="<?= (int)$item_id ?>">
-            <div class="col-md-9">
+            <div class="col-12 col-md-9">
                 <label class="form-label fw-bold">اختر الصنف</label>
                 <input type="text" id="itemPicker" class="form-control form-control-lg" list="itemsDL"
                        placeholder="اكتب للبحث عن صنف..." autocomplete="off"
@@ -91,7 +91,7 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
                 </datalist>
             </div>
-            <div class="col-md-3 d-grid">
+            <div class="col-12 col-md-3 d-grid">
                 <button type="submit" class="btn btn-primary btn-lg">عرض السجل</button>
             </div>
         </form>
@@ -135,7 +135,7 @@ require_once __DIR__ . '/../includes/header.php';
             </div>
             <div class="card-body p-0">
                 <div class="table-responsive">
-                    <table class="table table-hover mb-0 align-middle">
+                    <table class="table table-hover mb-0 align-middle item-history-table">
                         <thead>
                             <tr>
                                 <th>التاريخ</th><th>المورد</th><th>الكمية</th>

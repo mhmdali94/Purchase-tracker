@@ -65,7 +65,7 @@ require_once __DIR__ . '/../includes/header.php';
     <div class="card-body">
         <form method="get" class="row g-2 align-items-end">
             <input type="hidden" name="page" value="orders">
-            <div class="col-md-4">
+            <div class="col-12 col-md-4">
                 <label class="form-label fw-bold">المورد</label>
                 <select name="vendor_id" class="form-select">
                     <option value="0">كل الموردين</option>
@@ -76,15 +76,15 @@ require_once __DIR__ . '/../includes/header.php';
                     <?php endforeach; ?>
                 </select>
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <label class="form-label fw-bold">من تاريخ</label>
                 <input type="date" name="from" class="form-control" value="<?= e($f_from) ?>">
             </div>
-            <div class="col-md-3">
+            <div class="col-6 col-md-3">
                 <label class="form-label fw-bold">إلى تاريخ</label>
                 <input type="date" name="to" class="form-control" value="<?= e($f_to) ?>">
             </div>
-            <div class="col-md-2 d-grid gap-1">
+            <div class="col-12 col-md-2 d-grid gap-1">
                 <button type="submit" class="btn btn-primary">🔍 تصفية</button>
                 <a href="index.php?page=orders" class="btn btn-outline-secondary btn-sm">إلغاء</a>
             </div>

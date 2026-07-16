@@ -156,12 +156,12 @@ require_once __DIR__ . '/../includes/header.php';
         <div class="card-header">🧾 بيانات الأوردر</div>
         <div class="card-body">
             <div class="row g-3">
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-bold">رقم أمر التوريد</label>
                     <input type="text" name="custom_order_number" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['custom_order_number'] ?? '') : '' ?>" placeholder="تلقائي (مثل: 8726)">
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <label class="form-label fw-bold">المورد <span class="text-danger">*</span></label>
                     <select name="vendor_id" class="form-select form-select-lg" required>
                         <option value="">— اختر المورد —</option>
@@ -173,42 +173,42 @@ require_once __DIR__ . '/../includes/header.php';
                         <?php endforeach; ?>
                     </select>
                 </div>
-                <div class="col-md-3">
+                <div class="col-6 col-md-3">
                     <label class="form-label fw-bold">تاريخ الأوردر <span class="text-danger">*</span></label>
                     <input type="date" name="order_date" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['order_date']) : date('Y-m-d') ?>" required>
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-bold">سعر الدولار</label>
                     <input type="number" step="0.0001" min="0" name="usd_rate" id="usd_rate"
                            class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['usd_rate']) : '' ?>" placeholder="48.75">
                 </div>
-                <div class="col-md-2">
+                <div class="col-6 col-md-2">
                     <label class="form-label fw-bold">ملاحظات</label>
                     <input type="text" name="notes" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['notes']) : '' ?>" placeholder="اختياري">
                 </div>
             </div>
-            
+
             <!-- حقول أمر التوريد الإضافية (Sina Cosmetics PO) -->
             <div class="row g-3 mt-1">
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <label class="form-label fw-bold">عناية / المسؤول</label>
                     <input type="text" name="attention" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['attention'] ?? '') : '' ?>" placeholder="أ. تامر انور">
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <label class="form-label fw-bold">مدة التوريد</label>
                     <input type="text" name="delivery_period" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['delivery_period'] ?? '10 أيام') : '10 أيام' ?>" placeholder="10 أيام">
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <label class="form-label fw-bold">شروط السداد</label>
                     <input type="text" name="payment_terms" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['payment_terms'] ?? 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات') : 'شيك اجل بعد الفحص ومطابقة الاصناف للمواصفات' ?>">
                 </div>
-                <div class="col-md-3">
+                <div class="col-12 col-md-3">
                     <label class="form-label fw-bold">مكان التسليم</label>
                     <input type="text" name="delivery_location" class="form-control form-control-lg"
                            value="<?= $is_edit ? e($order['delivery_location'] ?? '') : '' ?>" placeholder="المصنع / المخزن">
@@ -276,14 +276,14 @@ require_once __DIR__ . '/../includes/header.php';
 
     <!-- المجموع الكلي والحفظ -->
     <div class="row g-3 align-items-stretch">
-        <div class="col-md-6">
+        <div class="col-12 col-md-6">
             <div class="grand-total-box h-100 d-flex flex-column justify-content-center">
                 <div>الإجمالي الكلي</div>
                 <div class="amount" id="grandTotalEgp">0.00 ج.م</div>
                 <div id="grandTotalUsd" class="small">— أدخل سعر الدولار لعرض المعادل</div>
             </div>
         </div>
-        <div class="col-md-6 d-flex align-items-center">
+        <div class="col-12 col-md-6 d-flex align-items-center">
             <button type="submit" class="btn btn-success btn-lg w-100 fw-bold" style="min-height:80px">
                 💾 <?= $is_edit ? 'حفظ التعديلات' : 'حفظ الأوردر' ?>
             </button>

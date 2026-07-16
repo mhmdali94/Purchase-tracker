@@ -67,7 +67,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row g-4">
     <!-- النموذج -->
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
         <div class="card">
             <div class="card-header"><?= $edit ? '✏️ تعديل مورد' : '➕ إضافة مورد' ?></div>
             <div class="card-body">
@@ -106,7 +106,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- القائمة -->
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-header">قائمة الموردين (<?= count($vendors) ?>)</div>
             <div class="card-body p-0">

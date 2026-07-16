@@ -343,35 +343,39 @@ main {
     .orders-list-table,
     .items-list-table,
     .vendors-list-table,
-    .order-view-table {
+    .order-view-table,
+    .item-history-table {
         display: block;
         width: 100% !important;
         border: none !important;
     }
-    
+
     .orders-list-table thead,
     .items-list-table thead,
     .vendors-list-table thead,
     .order-view-table thead,
+    .item-history-table thead,
     .orders-list-table tfoot,
     .order-view-table tfoot {
         display: none !important;
     }
-    
+
     .orders-list-table tbody,
     .items-list-table tbody,
     .vendors-list-table tbody,
-    .order-view-table tbody {
+    .order-view-table tbody,
+    .item-history-table tbody {
         display: flex;
         flex-direction: column;
         gap: 1rem;
         padding: 0.25rem;
     }
-    
+
     .orders-list-table tr,
     .items-list-table tr,
     .vendors-list-table tr,
-    .order-view-table tr {
+    .order-view-table tr,
+    .item-history-table tr {
         display: block;
         background: #fff;
         border: 1px solid #eef2f6 !important;
@@ -381,11 +385,12 @@ main {
         margin-bottom: 0 !important;
         position: relative;
     }
-    
+
     .orders-list-table td,
     .items-list-table td,
     .vendors-list-table td,
-    .order-view-table td {
+    .order-view-table td,
+    .item-history-table td {
         display: flex !important;
         justify-content: space-between;
         align-items: center;
@@ -395,18 +400,20 @@ main {
         min-width: 0 !important;
         text-align: left !important;
     }
-    
+
     .orders-list-table td > *,
     .items-list-table td > *,
     .vendors-list-table td > *,
-    .order-view-table td > * {
+    .order-view-table td > *,
+    .item-history-table td > * {
         text-align: left;
     }
 
     .orders-list-table td::before,
     .items-list-table td::before,
     .vendors-list-table td::before,
-    .order-view-table td::before {
+    .order-view-table td::before,
+    .item-history-table td::before {
         font-weight: 700;
         color: var(--muted);
         font-size: 0.85rem;
@@ -435,7 +442,7 @@ main {
     }
     
     .orders-list-table td:nth-child(7),
-    .items-list-table td:nth-child(4),
+    .items-list-table td:nth-child(5),
     .vendors-list-table td:nth-child(5) {
         border-top: 1px solid #f1f5f9 !important;
         padding-top: 0.75rem !important;
@@ -443,21 +450,25 @@ main {
         justify-content: flex-end !important;
     }
     .orders-list-table td:nth-child(7)::before,
-    .items-list-table td:nth-child(4)::before,
+    .items-list-table td:nth-child(5)::before,
     .vendors-list-table td:nth-child(5)::before {
         display: none;
     }
-    
-    /* تخصيص مظهر كرت الأصناف */
-    .items-list-table td:nth-child(1)::before { content: "الصنف"; }
-    .items-list-table td:nth-child(2)::before { content: "الوحدة"; }
-    .items-list-table td:nth-child(3)::before { content: "المجموعة"; }
-    
+
+    /* تخصيص مظهر كرت الأصناف (١: الصورة، ٢: الاسم، ٣: الوحدة، ٤: المجموعة، ٥: إجراءات) */
     .items-list-table td:nth-child(1) {
+        justify-content: flex-start !important;
+        padding-bottom: 0.5rem !important;
+    }
+    .items-list-table td:nth-child(2)::before { content: "الصنف"; }
+    .items-list-table td:nth-child(3)::before { content: "الوحدة"; }
+    .items-list-table td:nth-child(4)::before { content: "المجموعة"; }
+
+    .items-list-table td:nth-child(2) {
         font-size: 1.1rem;
         font-weight: 700;
     }
-    
+
     /* تخصيص مظهر كرت الموردين */
     .vendors-list-table td:nth-child(1)::before { content: "المورد"; }
     .vendors-list-table td:nth-child(2)::before { content: "الهاتف"; }
@@ -483,6 +494,37 @@ main {
         font-size: 1.1rem;
         font-weight: 700;
         color: var(--brand-dark);
+    }
+
+    /* سجل أسعار الصنف (بحث عن صنف) */
+    .item-history-table td:nth-child(1)::before { content: "التاريخ"; }
+    .item-history-table td:nth-child(2)::before { content: "المورد"; }
+    .item-history-table td:nth-child(3)::before { content: "الكمية"; }
+    .item-history-table td:nth-child(4)::before { content: "سعر الوحدة"; }
+    .item-history-table td:nth-child(5)::before { content: "سعر الدولار يومها"; }
+    .item-history-table td:nth-child(6)::before { content: "المعادل بالدولار"; }
+
+    .item-history-table td:nth-child(2) {
+        font-size: 1.1rem;
+        font-weight: 700;
+    }
+    .item-history-table td:nth-child(4) {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: var(--brand-dark);
+    }
+    .item-history-table td:nth-child(6) {
+        border-top: 1px solid #f1f5f9 !important;
+        padding-top: 0.75rem !important;
+        margin-top: 0.5rem;
+    }
+
+    /* تمييز صف أقل سعر داخل تصميم الكروت */
+    .item-history-table tr.lowest-price {
+        border-color: #a7f3d0 !important;
+    }
+    .item-history-table tr.lowest-price td:first-child::before {
+        content: "⭐ التاريخ";
     }
 }
 

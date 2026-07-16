@@ -39,6 +39,7 @@ $total = array_sum(array_column($lines, 'line_total'));
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>أمر توريد رقم <?= $order['custom_order_number'] !== '' && $order['custom_order_number'] !== null ? e($order['custom_order_number']) : (int)$order['id'] ?></title>
     <!-- خط القاهرة العربي الرسمي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -147,6 +148,18 @@ $total = array_sum(array_column($lines, 'line_total'));
             font-weight: 600;
         }
 
+        /* على الشاشة (خارج الطباعة): سماح بتمرير أفقي للجدول فقط على الجوال
+           بدلاً من تمرير الصفحة كاملة، مع إبقاء الهيدر واللوجو ثابتَين.
+           لا تؤثر هذه القاعدة على مخرجات الطباعة/PDF إطلاقاً. */
+        @media screen {
+            .po-table-wrap {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            .po-table {
+                min-width: 640px;
+            }
+        }
         /* جدول البنود */
         .po-table {
             width: 100%;
@@ -453,6 +466,7 @@ $total = array_sum(array_column($lines, 'line_total'));
         <p style="margin: 0 0 15px 0; font-size: 14px; font-weight: 600;">الرجاء القيام بتوريد الآتي:</p>
 
         <!-- جدول البنود -->
+        <div class="po-table-wrap">
         <table class="po-table">
             <thead>
                 <tr>
@@ -497,6 +511,7 @@ $total = array_sum(array_column($lines, 'line_total'));
                 </tr>
             </tbody>
         </table>
+        </div>
 
         <!-- شروط التوريد والسداد -->
         <div class="po-terms-section">

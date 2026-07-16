@@ -61,7 +61,7 @@ require_once __DIR__ . '/../includes/header.php';
 
 <div class="row g-4">
     <!-- نموذج الإضافة/التعديل -->
-    <div class="col-lg-4">
+    <div class="col-12 col-lg-4">
         <div class="card">
             <div class="card-header"><?= $edit ? '✏️ تعديل مجموعة' : '➕ إضافة مجموعة' ?></div>
             <div class="card-body">
@@ -87,7 +87,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 
     <!-- القائمة -->
-    <div class="col-lg-8">
+    <div class="col-12 col-lg-8">
         <div class="card">
             <div class="card-header">قائمة المجموعات (<?= count($categories) ?>)</div>
             <div class="card-body p-0">
