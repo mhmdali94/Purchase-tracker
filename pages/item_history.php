@@ -199,13 +199,30 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <script>
-// ربط حقل البحث بالمعرّف المخصّص ودعم عرض الصور والتفاصيل مباشرة تحت صندوق البحث مع دعم التنقل بلوحة المفاتيح
+// ربط حقل البحث بالمعرّف المخصّص ودعم عرض الصور والتفاصيل مباشرة تحت صندوق البحث مع دعم التنقل بلوحة المفاتيح والأنماط المباشرة لمنع التخزين المؤقت
 (function () {
     const items = <?= json_encode($items_js, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
     const picker = document.getElementById('itemPicker');
     const hidden = document.getElementById('pickedItemId');
     const form = document.getElementById('itemPickForm');
     const resultsContainer = document.getElementById('autocomplete-results');
+
+    // تطبيق الأنماط مباشرة على حاوية النتائج لضمان استقرار التصميم في حال التخزين المؤقت لملف CSS
+    resultsContainer.style.position = 'absolute';
+    resultsContainer.style.top = '100%';
+    resultsContainer.style.left = '0';
+    resultsContainer.style.right = '0';
+    resultsContainer.style.zIndex = '1050';
+    resultsContainer.style.maxHeight = '320px';
+    resultsContainer.style.overflowY = 'auto';
+    resultsContainer.style.backgroundColor = '#fff';
+    resultsContainer.style.border = '1px solid rgba(0, 0, 0, 0.08)';
+    resultsContainer.style.borderRadius = '8px';
+    resultsContainer.style.boxShadow = '0 10px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1)';
+    resultsContainer.style.marginTop = '4px';
+    resultsContainer.style.padding = '6px 0';
+    resultsContainer.style.direction = 'rtl';
+    resultsContainer.style.textAlign = 'right';
 
     let activeIndex = -1;
     let currentFiltered = [];
@@ -224,6 +241,27 @@ require_once __DIR__ . '/../includes/header.php';
             div.className = 'autocomplete-item';
             div.dataset.index = index;
             
+            // تصميم السطر كـ Flexbox لعرض الصورة بجانب النص مباشرة
+            div.style.display = 'flex';
+            div.style.alignItems = 'center';
+            div.style.padding = '8px 12px';
+            div.style.margin = '2px 6px';
+            div.style.cursor = 'pointer';
+            div.style.borderRadius = '6px';
+            div.style.gap = '12px';
+            div.style.transition = 'background-color 0.15s ease';
+            div.style.backgroundColor = 'transparent';
+            
+            // تأثيرات الماوس
+            div.addEventListener('mouseenter', function () {
+                div.style.backgroundColor = '#f1f5f9';
+            });
+            div.addEventListener('mouseleave', function () {
+                if (parseInt(div.dataset.index) !== activeIndex) {
+                    div.style.backgroundColor = 'transparent';
+                }
+            });
+            
             // Image element
             const img = document.createElement('img');
             img.src = 'ajax/item_photo.php?id=' + item.id;
@@ -232,22 +270,37 @@ require_once __DIR__ . '/../includes/header.php';
             img.style.height = '42px';
             img.style.objectFit = 'cover';
             img.style.flexShrink = '0';
-            img.style.borderRadius = '0.375rem';
+            img.style.borderRadius = '6px';
             img.style.border = '1px solid #e2e8f0';
             
             // Details element
             const details = document.createElement('div');
             details.className = 'item-details';
+            details.style.flexGrow = '1';
+            details.style.minWidth = '0';
+            details.style.textAlign = 'right';
             
             const nameSpan = document.createElement('div');
             nameSpan.className = 'item-name';
             nameSpan.textContent = item.name;
+            nameSpan.style.fontWeight = '700';
+            nameSpan.style.fontSize = '14.5px';
+            nameSpan.style.color = '#1e293b';
+            nameSpan.style.whiteSpace = 'nowrap';
+            nameSpan.style.overflow = 'hidden';
+            nameSpan.style.textOverflow = 'ellipsis';
             details.appendChild(nameSpan);
             
             if (item.specs || item.unit) {
                 const specsSpan = document.createElement('div');
                 specsSpan.className = 'item-specs';
                 specsSpan.textContent = (item.specs ? item.specs : '') + (item.unit ? ' (' + item.unit + ')' : '');
+                specsSpan.style.fontSize = '12px';
+                specsSpan.style.color = '#64748b';
+                specsSpan.style.marginTop = '2px';
+                specsSpan.style.whiteSpace = 'nowrap';
+                specsSpan.style.overflow = 'hidden';
+                specsSpan.style.textOverflow = 'ellipsis';
                 details.appendChild(specsSpan);
             }
             
@@ -276,9 +329,11 @@ require_once __DIR__ . '/../includes/header.php';
         divs.forEach((div, i) => {
             if (i === activeIndex) {
                 div.classList.add('active');
+                div.style.backgroundColor = '#f1f5f9';
                 div.scrollIntoView({ block: 'nearest' });
             } else {
                 div.classList.remove('active');
+                div.style.backgroundColor = 'transparent';
             }
         });
     }
