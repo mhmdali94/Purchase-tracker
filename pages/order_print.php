@@ -367,9 +367,9 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
             display: none;
         }
         body.print-fit .print-page {
-            width: 186mm;   /* عرض A4 الفعلي بعد هوامش 12مم يميناً ويساراً */
-            max-width: 186mm;
-            padding: 0;
+            width: 210mm;   /* عرض A4 الكامل — هوامش PDF صفر */
+            max-width: 210mm;
+            padding: 8mm 12mm; /* هامش داخلي بدلاً من هامش PDF */
             border: none;
         }
         body.print-fit .sina-logo-img {
@@ -660,10 +660,17 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                     var orderNo = <?= json_encode($po_number) ?>;
 
                     var opt = {
-                        margin:      [10, 12, 10, 12],
+                        margin:      0,
                         filename:    'order-' + orderNo + '.pdf',
                         image:       { type: 'jpeg', quality: 0.95 },
-                        html2canvas: { scale: 2, useCORS: true, allowTaint: true, logging: false },
+                        html2canvas: {
+                            scale: 2,
+                            useCORS: true,
+                            allowTaint: true,
+                            logging: false,
+                            width: element.scrollWidth,
+                            windowWidth: element.scrollWidth
+                        },
                         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
                         pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
                     };
