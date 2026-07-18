@@ -700,6 +700,10 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                                 if (clonedElement) {
                                     clonedElement.setAttribute('dir', 'rtl');
                                     clonedElement.style.direction = 'rtl';
+                                    clonedElement.style.position = 'absolute';
+                                    clonedElement.style.left = '0';
+                                    clonedElement.style.top = '0';
+                                    clonedElement.style.width = '794px';
                                     clonedElement.style.margin = '0';
                                     clonedElement.style.padding = '8mm 12mm';
                                 }
