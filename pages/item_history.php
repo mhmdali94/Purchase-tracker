@@ -86,12 +86,14 @@ require_once __DIR__ . '/../includes/header.php';
         <form method="get" class="row g-2 align-items-end" id="itemPickForm">
             <input type="hidden" name="page" value="item_history">
             <input type="hidden" name="item_id" id="pickedItemId" value="<?= (int)$item_id ?>">
-            <div class="col-12 col-md-9 position-relative">
+            <div class="col-12 col-md-9">
                 <label class="form-label fw-bold">اختر الصنف</label>
-                <input type="text" id="itemPicker" class="form-control form-control-lg"
-                       placeholder="اكتب للبحث عن صنف..." autocomplete="off"
-                       value="<?= $item ? e($item_display) : '' ?>">
-                <div id="autocomplete-results" class="autocomplete-results-container d-none"></div>
+                <div class="position-relative">
+                    <input type="text" id="itemPicker" class="form-control form-control-lg"
+                           placeholder="اكتب للبحث عن صنف..." autocomplete="off"
+                           value="<?= $item ? e($item_display) : '' ?>">
+                    <div id="autocomplete-results" class="autocomplete-results-container d-none"></div>
+                </div>
             </div>
             <div class="col-12 col-md-3 d-grid">
                 <button type="submit" class="btn btn-primary btn-lg">عرض السجل</button>
@@ -197,7 +199,7 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <script>
-// ربط حقل البحث بالمعرّف المخصّص ودعم عرض الصور والتفاصيل مباشرة تحت صندوق البحث
+// ربط حقل البحث بالمعرّف المخصّص ودعم عرض الصور والتفاصيل مباشرة تحت صندوق البحث مع دعم التنقل بلوحة المفاتيح
 (function () {
     const items = <?= json_encode($items_js, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
     const picker = document.getElementById('itemPicker');
@@ -205,16 +207,22 @@ require_once __DIR__ . '/../includes/header.php';
     const form = document.getElementById('itemPickForm');
     const resultsContainer = document.getElementById('autocomplete-results');
 
+    let activeIndex = -1;
+    let currentFiltered = [];
+
     function renderResults(filtered) {
+        currentFiltered = filtered;
+        activeIndex = -1;
         resultsContainer.innerHTML = '';
         if (filtered.length === 0) {
             resultsContainer.classList.add('d-none');
             return;
         }
         
-        filtered.forEach(item => {
+        filtered.forEach((item, index) => {
             const div = document.createElement('div');
             div.className = 'autocomplete-item';
+            div.dataset.index = index;
             
             // Image element
             const img = document.createElement('img');
@@ -224,8 +232,8 @@ require_once __DIR__ . '/../includes/header.php';
             img.style.height = '42px';
             img.style.objectFit = 'cover';
             img.style.flexShrink = '0';
-            img.style.borderRadius = '0.25rem';
-            img.style.border = '1px solid #e9ecef';
+            img.style.borderRadius = '0.375rem';
+            img.style.border = '1px solid #e2e8f0';
             
             // Details element
             const details = document.createElement('div');
@@ -247,16 +255,32 @@ require_once __DIR__ . '/../includes/header.php';
             div.appendChild(details);
             
             div.addEventListener('click', function () {
-                picker.value = item.label;
-                hidden.value = item.id;
-                resultsContainer.classList.add('d-none');
-                form.submit();
+                selectItem(item);
             });
             
             resultsContainer.appendChild(div);
         });
         
         resultsContainer.classList.remove('d-none');
+    }
+
+    function selectItem(item) {
+        picker.value = item.label;
+        hidden.value = item.id;
+        resultsContainer.classList.add('d-none');
+        form.submit();
+    }
+
+    function updateActive() {
+        const divs = resultsContainer.querySelectorAll('.autocomplete-item');
+        divs.forEach((div, i) => {
+            if (i === activeIndex) {
+                div.classList.add('active');
+                div.scrollIntoView({ block: 'nearest' });
+            } else {
+                div.classList.remove('active');
+            }
+        });
     }
 
     picker.addEventListener('input', function () {
@@ -275,6 +299,27 @@ require_once __DIR__ . '/../includes/header.php';
         });
         
         renderResults(filtered.slice(0, 15));
+    });
+
+    picker.addEventListener('keydown', function (e) {
+        if (resultsContainer.classList.contains('d-none')) return;
+        
+        if (e.key === 'ArrowDown') {
+            e.preventDefault();
+            activeIndex = (activeIndex + 1) % currentFiltered.length;
+            updateActive();
+        } else if (e.key === 'ArrowUp') {
+            e.preventDefault();
+            activeIndex = (activeIndex - 1 + currentFiltered.length) % currentFiltered.length;
+            updateActive();
+        } else if (e.key === 'Enter') {
+            if (activeIndex >= 0 && activeIndex < currentFiltered.length) {
+                e.preventDefault();
+                selectItem(currentFiltered[activeIndex]);
+            }
+        } else if (e.key === 'Escape') {
+            resultsContainer.classList.add('d-none');
+        }
     });
 
     document.addEventListener('click', function (e) {
