@@ -220,6 +220,12 @@ require_once __DIR__ . '/../includes/header.php';
             const img = document.createElement('img');
             img.src = 'ajax/item_photo.php?id=' + item.id;
             img.alt = item.name;
+            img.style.width = '42px';
+            img.style.height = '42px';
+            img.style.objectFit = 'cover';
+            img.style.flexShrink = '0';
+            img.style.borderRadius = '0.25rem';
+            img.style.border = '1px solid #e9ecef';
             
             // Details element
             const details = document.createElement('div');
