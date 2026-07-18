@@ -362,6 +362,11 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
             --tbl-fs: 11px;
             --tbl-py: 4px;
             --tbl-px: 6px;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #fff;
+            width: 210mm !important;
+            max-width: 210mm !important;
         }
         body.print-fit .print-actions {
             display: none;
@@ -371,6 +376,7 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
             max-width: 210mm;
             padding: 8mm 12mm; /* هامش داخلي بدلاً من هامش PDF */
             border: none;
+            margin: 0 !important;
         }
         body.print-fit .sina-logo-img {
             width: 58px;
@@ -668,8 +674,10 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                             useCORS: true,
                             allowTaint: true,
                             logging: false,
-                            width: element.scrollWidth,
-                            windowWidth: element.scrollWidth
+                            scrollX: 0,
+                            scrollY: 0,
+                            width: 794,
+                            windowWidth: 794
                         },
                         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
                         pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
