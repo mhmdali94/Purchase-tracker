@@ -16,7 +16,13 @@ foreach ($items_raw as $it) {
     $label = $it['name']
         . ($it['specs'] !== '' ? ' — ' . $it['specs'] : '')
         . ($it['unit'] !== '' ? ' (' . $it['unit'] . ')' : '');
-    $items_js[] = ['id' => (int)$it['id'], 'label' => $label];
+    $items_js[] = [
+        'id' => (int)$it['id'],
+        'label' => $label,
+        'name' => $it['name'],
+        'specs' => $it['specs'],
+        'unit' => $it['unit']
+    ];
 }
 
 $item_id = (int) ($_GET['item_id'] ?? 0);
@@ -80,16 +86,12 @@ require_once __DIR__ . '/../includes/header.php';
         <form method="get" class="row g-2 align-items-end" id="itemPickForm">
             <input type="hidden" name="page" value="item_history">
             <input type="hidden" name="item_id" id="pickedItemId" value="<?= (int)$item_id ?>">
-            <div class="col-12 col-md-9">
+            <div class="col-12 col-md-9 position-relative">
                 <label class="form-label fw-bold">اختر الصنف</label>
-                <input type="text" id="itemPicker" class="form-control form-control-lg" list="itemsDL"
+                <input type="text" id="itemPicker" class="form-control form-control-lg"
                        placeholder="اكتب للبحث عن صنف..." autocomplete="off"
                        value="<?= $item ? e($item_display) : '' ?>">
-                <datalist id="itemsDL">
-                    <?php foreach ($items_js as $ij): ?>
-                        <option value="<?= e($ij['label']) ?>"></option>
-                    <?php endforeach; ?>
-                </datalist>
+                <div id="autocomplete-results" class="autocomplete-results-container d-none"></div>
             </div>
             <div class="col-12 col-md-3 d-grid">
                 <button type="submit" class="btn btn-primary btn-lg">عرض السجل</button>
@@ -195,22 +197,101 @@ require_once __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <script>
-// ربط حقل البحث بالمعرّف قبل الإرسال
+// ربط حقل البحث بالمعرّف المخصّص ودعم عرض الصور والتفاصيل مباشرة تحت صندوق البحث
 (function () {
     const items = <?= json_encode($items_js, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP) ?>;
-    const map = {};
-    items.forEach(i => map[i.label] = i.id);
     const picker = document.getElementById('itemPicker');
     const hidden = document.getElementById('pickedItemId');
     const form = document.getElementById('itemPickForm');
+    const resultsContainer = document.getElementById('autocomplete-results');
+
+    function renderResults(filtered) {
+        resultsContainer.innerHTML = '';
+        if (filtered.length === 0) {
+            resultsContainer.classList.add('d-none');
+            return;
+        }
+        
+        filtered.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'autocomplete-item';
+            
+            // Image element
+            const img = document.createElement('img');
+            img.src = 'ajax/item_photo.php?id=' + item.id;
+            img.alt = item.name;
+            
+            // Details element
+            const details = document.createElement('div');
+            details.className = 'item-details';
+            
+            const nameSpan = document.createElement('div');
+            nameSpan.className = 'item-name';
+            nameSpan.textContent = item.name;
+            details.appendChild(nameSpan);
+            
+            if (item.specs || item.unit) {
+                const specsSpan = document.createElement('div');
+                specsSpan.className = 'item-specs';
+                specsSpan.textContent = (item.specs ? item.specs : '') + (item.unit ? ' (' + item.unit + ')' : '');
+                details.appendChild(specsSpan);
+            }
+            
+            div.appendChild(img);
+            div.appendChild(details);
+            
+            div.addEventListener('click', function () {
+                picker.value = item.label;
+                hidden.value = item.id;
+                resultsContainer.classList.add('d-none');
+                form.submit();
+            });
+            
+            resultsContainer.appendChild(div);
+        });
+        
+        resultsContainer.classList.remove('d-none');
+    }
 
     picker.addEventListener('input', function () {
-        hidden.value = map[picker.value] || '';
+        const val = picker.value.trim().toLowerCase();
+        hidden.value = ''; // Reset when typing changes
+        
+        if (!val) {
+            resultsContainer.classList.add('d-none');
+            return;
+        }
+        
+        const filtered = items.filter(item => {
+            return item.name.toLowerCase().includes(val) || 
+                   (item.specs && item.specs.toLowerCase().includes(val)) ||
+                   item.label.toLowerCase().includes(val);
+        });
+        
+        renderResults(filtered.slice(0, 15));
     });
+
+    document.addEventListener('click', function (e) {
+        if (!picker.contains(e.target) && !resultsContainer.contains(e.target)) {
+            resultsContainer.classList.add('d-none');
+        }
+    });
+
+    picker.addEventListener('focus', function () {
+        picker.dispatchEvent(new Event('input'));
+    });
+
     form.addEventListener('submit', function (ev) {
         if (!hidden.value) {
-            ev.preventDefault();
-            alert('اختر صنفاً صحيحاً من القائمة.');
+            const val = picker.value.trim().toLowerCase();
+            const exactMatch = items.find(i => i.label.toLowerCase() === val || i.name.toLowerCase() === val);
+            if (exactMatch) {
+                hidden.value = exactMatch.id;
+                picker.value = exactMatch.label;
+            } else {
+                ev.preventDefault();
+                alert('اختر صنفاً صحيحاً من القائمة.');
+            }
         }
     });
 })();
