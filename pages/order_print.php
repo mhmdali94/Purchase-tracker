@@ -249,7 +249,8 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
     <!-- أزرار التحكم -->
     <div class="print-actions">
         <a href="index.php?page=order_view&id=<?= (int)$order['id'] ?>" class="btn-action btn-back">↩️ رجوع</a>
-        <button type="button" onclick="doPrint()" class="btn-action btn-print-btn">🖨️ طباعة / PDF</button>
+        <button type="button" onclick="doPrint()" class="btn-action btn-print-btn">🖨️ طباعة</button>
+        <a href="index.php?page=order_pdf&id=<?= (int)$order['id'] ?>" class="btn-action btn-pdf" target="_blank">📥 تحميل PDF</a>
     </div>
 
     <!-- حاوية الصفحة -->

@@ -127,10 +127,10 @@ require_once __DIR__ . '/../includes/header.php';
                                 <td class="text-end" style="white-space:nowrap">
                                     <a href="index.php?page=order_view&id=<?= (int)$o['id'] ?>"
                                        class="btn btn-sm btn-outline-secondary">👁️ عرض</a>
-                                    <a href="index.php?page=order_print&id=<?= (int)$o['id'] ?>&download=1"
+                                    <a href="index.php?page=order_pdf&id=<?= (int)$o['id'] ?>"
                                        target="_blank"
                                        class="btn btn-sm btn-outline-success"
-                                       title="تحميل PDF">📄 PDF</a>
+                                       title="تحميل PDF">📥 PDF</a>
                                     <a href="index.php?page=order_new&id=<?= (int)$o['id'] ?>"
                                        class="btn btn-sm btn-outline-primary">✏️</a>
                                     <form method="post" class="d-inline js-confirm-delete"

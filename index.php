@@ -19,7 +19,7 @@ require_login();
 $allowed = [
     'dashboard', 'categories', 'items', 'vendors',
     'order_new', 'orders', 'order_view',
-    'item_history', 'reports', 'settings', 'order_print',
+    'item_history', 'reports', 'settings', 'order_print', 'order_pdf',
 ];
 
 $page = $_GET['page'] ?? 'dashboard';
