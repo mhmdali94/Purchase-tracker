@@ -46,7 +46,7 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" id="viewportMeta">
     <title>أمر توريد رقم <?= e($po_number) ?></title>
     <!-- خط القاهرة العربي الرسمي -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -444,7 +444,7 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
     </div>
 
     <!-- حاوية الصفحة -->
-    <div class="print-page">
+    <div class="print-page" dir="rtl">
 
         <!-- الهيدر العلوي -->
         <div class="print-header">
@@ -665,6 +665,13 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                     var element = document.querySelector('.print-page');
                     var orderNo = <?= json_encode($po_number) ?>;
 
+                    var vp = document.getElementById("viewportMeta");
+                    var originalContent = "";
+                    if (vp) {
+                        originalContent = vp.getAttribute("content");
+                        vp.setAttribute("content", "width=794, initial-scale=1.0, maximum-scale=1.0");
+                    }
+
                     var opt = {
                         margin:      0,
                         filename:    'order-' + orderNo + '.pdf',
@@ -677,13 +684,35 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                             scrollX: 0,
                             scrollY: 0,
                             width: 794,
-                            windowWidth: 794
+                            windowWidth: 794,
+                            onclone: function(clonedDoc) {
+                                // Force LTR direction on document root and body in the clone to avoid negative coordinate overflows in RTL
+                                clonedDoc.documentElement.setAttribute('dir', 'ltr');
+                                clonedDoc.documentElement.style.direction = 'ltr';
+                                if (clonedDoc.body) {
+                                    clonedDoc.body.setAttribute('dir', 'ltr');
+                                    clonedDoc.body.style.direction = 'ltr';
+                                    clonedDoc.body.style.margin = '0';
+                                    clonedDoc.body.style.padding = '0';
+                                }
+                                // Force RTL on the target container itself to maintain correct column ordering and text direction
+                                var clonedElement = clonedDoc.querySelector('.print-page');
+                                if (clonedElement) {
+                                    clonedElement.setAttribute('dir', 'rtl');
+                                    clonedElement.style.direction = 'rtl';
+                                    clonedElement.style.margin = '0';
+                                    clonedElement.style.padding = '8mm 12mm';
+                                }
+                            }
                         },
                         jsPDF:       { unit: 'mm', format: 'a4', orientation: 'portrait' },
                         pagebreak:   { mode: ['avoid-all', 'css', 'legacy'] }
                     };
 
                     html2pdf().set(opt).from(element).save().then(function() {
+                        if (vp && originalContent) {
+                            vp.setAttribute("content", originalContent);
+                        }
                         overlay.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:Cairo,sans-serif;">'
                             + '<div style="font-size:48px;margin-bottom:20px;">✅</div>'
                             + '<div style="font-size:20px;font-weight:700;color:#16a34a;">تم تحميل PDF بنجاح!</div>'
@@ -692,6 +721,9 @@ $po_number = ($order['custom_order_number'] !== '' && $order['custom_order_numbe
                         if (actions) actions.style.display = '';
                         resetPageFit();
                     }).catch(function(err) {
+                        if (vp && originalContent) {
+                            vp.setAttribute("content", originalContent);
+                        }
                         overlay.innerHTML = '<div style="text-align:center;padding:60px 20px;font-family:Cairo,sans-serif;">'
                             + '<div style="font-size:48px;margin-bottom:20px;">❌</div>'
                             + '<div style="font-size:20px;font-weight:700;color:#dc2626;">حدث خطأ أثناء إنشاء PDF</div>'
